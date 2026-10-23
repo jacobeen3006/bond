@@ -35,6 +35,7 @@ HALO is assembled, not written from scratch: four MIT codebases are imported onc
 ## Phase Details
 
 ### Phase 1: Import & Provenance Ledger
+
 **Goal**: The four upstream codebases live in one Windows monorepo with an import ledger complete enough that any upstream fix or license obligation can be located and replayed without archaeology.
 **Mode:** mvp
 **Depends on**: Nothing (first phase)
@@ -45,9 +46,35 @@ HALO is assembled, not written from scratch: four MIT codebases are imported onc
   3. Each subtree's LICENSE and copyright notices are byte-identical to upstream and cannot be modified by the rebrand tooling (IMPT-02).
   4. A synthetic upstream security fix can be triaged through the watchlist, path map and rename map and landed as a patch without searching the trees by hand (IMPT-05).
   5. Import-fidelity checks prove line endings, LFS-tracked binaries and lockfile bytes match upstream blob-for-blob (IMPT-06).
-**Plans**: TBD
+
+**Plans:** 9 plans
+
+Plans:
+**Wave 1**
+- [ ] 01-01-PLAN.md — Walking skeleton: import `gsd-omp` at a pinned SHA, write the ledger, replay it byte-for-byte through one command
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 01-02-PLAN.md — Hermetic fixture plus hostile-path and attribute-fidelity gates that refuse bad input before writing
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [ ] 01-03-PLAN.md — Complete the `gsd-omp` ledger; import `hermes-agent` and `hindsight`; schemas and watch entries
+
+**Wave 4** *(blocked on Wave 3 completion)*
+- [ ] 01-04-PLAN.md — Import `oh-my-pi` with LFS pointers intact and its three workspace roots recorded, not absorbed
+
+**Wave 5** *(blocked on Wave 4 completion)*
+- [ ] 01-05-PLAN.md — Pin every licence-ish path by raw bytes and ship the rebrand deny-list contract with a sensitivity-proving test
+- [ ] 01-07-PLAN.md — `provenance-where`, reverse rename lookup, and the permanent synthetic-CVE triage drill plus runbook
+- [ ] 01-08-PLAN.md — Offline `provenance-verify`, unrecorded-edit detector, five named replay drift classes, pre-commit gate
+
+**Wave 6** *(blocked on Wave 5 completion)*
+- [ ] 01-06-PLAN.md — LFS inventory verification and lockfile byte/completeness checks across all four trees
+
+**Wave 7** *(blocked on Wave 6 completion)*
+- [ ] 01-09-PLAN.md — One-command `just verify`, consolidated CLI, workspace-isolation proof, and the `provenance-replay` CI job
 
 ### Phase 2: Rebrand, Wire Contract & Migration
+
 **Goal**: One brand vocabulary — binary name, packages, config home, environment variables, plugin ids, database schema and the entire RPC wire — is generated from a single source and frozen before any HALO contract is written.
 **Mode:** mvp
 **Depends on**: Phase 1
@@ -58,9 +85,11 @@ HALO is assembled, not written from scratch: four MIT codebases are imported onc
   3. All 185 RPC commands and 18 frame categories carry generated HALO names, and the handshake exchanges a contract hash that refuses a mismatched client/server pair with an actionable error (BRND-04, BRND-05).
   4. Old wire names are accepted for one minor version with a deprecation warning and are rejected afterwards (BRND-06).
   5. An existing Hermes/OMP profile migrates by copy-verify with a `.migrated-from` marker (fresh, legacy-only, both-present and deny-listed-plugin fixtures pass), and plugin allow-lists and entry points survive the rename without silently disabling a plugin (BRND-03, BRND-08).
+
 **Plans**: TBD
 
 ### Phase 3: Unified Loop & Session Authority
+
 **Goal**: One agent loop owns every turn and one SQLite transcript is the only history, so every surface built later shares the same conversation.
 **Mode:** mvp
 **Depends on**: Phase 2
@@ -71,9 +100,11 @@ HALO is assembled, not written from scratch: four MIT codebases are imported onc
   3. Compaction is loop-owned and single-sourced: automatic and manual compaction produce one transcript lineage and token accounting matches the request actually sent (LOOP-04).
   4. Every context item the model received appears in the visible transcript with a stable identity, and the mirrored-vs-sent hash check passes on a turn larger than 1 MiB (LOOP-05).
   5. A turn is marked complete only on an authoritative terminal signal; outstanding background work keeps it open and a finished turn never reopens (LOOP-06).
+
 **Plans**: TBD
 
 ### Phase 4: Tool Registry & Policy Gate
+
 **Goal**: Every tool decision passes exactly one registry and one pure policy gate before any backend runs, with deny as the default.
 **Mode:** mvp
 **Depends on**: Phase 3
@@ -84,9 +115,11 @@ HALO is assembled, not written from scratch: four MIT codebases are imported onc
   3. The gate can allow, deny or rewrite arguments, and every decision is recorded with a reason and a request hash that the persisted tool row references (GATE-03).
   4. Every registry entry declares capability classes, and a call from a turn context that does not permit those capabilities is denied (GATE-06).
   5. Approval modes (auto-approve, allowlist, YOLO) are per-session policies, and a denied write leaves no side effect on disk (GATE-07).
+
 **Plans**: TBD
 
 ### Phase 5: Coding Core over RPC
+
 **Goal**: The coding core runs as a supervised tool backend, so file, search, shell and LSP capabilities become gated registry tools with crash isolation and replayable frames.
 **Mode:** mvp
 **Depends on**: Phase 4
@@ -97,9 +130,11 @@ HALO is assembled, not written from scratch: four MIT codebases are imported onc
   3. Hashline edits reject stale content anchors before writing with a recoverable error, and cancellation stops running core work in bounded time (CORE-03, CORE-04).
   4. Killing the core mid-call surfaces typed errors in the transcript and restarts it without losing the session or replaying a side-effecting call (CORE-05).
   5. Recorded sessions replay deterministically, oversized frames chunk and reassemble, parallel results pair to call ids in order, and adapter overhead stays under 150 ms per round-trip (CORE-06, CORE-07, CORE-08).
+
 **Plans**: TBD
 
 ### Phase 6: Code Intelligence, Execution & Rollback
+
 **Goal**: The model can navigate, edit structurally, execute, browse and drive a desktop through gated tools, and a user can undo a turn's workspace changes.
 **Mode:** mvp
 **Depends on**: Phase 5
@@ -110,9 +145,11 @@ HALO is assembled, not written from scratch: four MIT codebases are imported onc
   3. Eval cells run only under `backend.raw` approval and cannot re-enter the tool registry or reach host-control APIs (CODE-04).
   4. Browser automation, web search/extraction with URL and PDF reading, desktop GUI automation and media/TTS/voice surfaces are reachable through the gate (CODE-05, CODE-06).
   5. A user can roll a turn's workspace changes back from a shadow-git checkpoint and see exactly which files were restored (LOOP-07).
+
 **Plans**: TBD
 
 ### Phase 7: Subagent Orchestration
+
 **Goal**: A parent turn can fan out child sessions that are governed by the same gate and can be steered, killed and restored.
 **Mode:** mvp
 **Depends on**: Phase 5
@@ -122,9 +159,11 @@ HALO is assembled, not written from scratch: four MIT codebases are imported onc
   2. Every child tool call carries its own policy decision and inherits the parent's policy — no child executes ungoverned (SUB-02).
   3. A user can steer, kill and restore a child session, and a killed child leaves no orphaned process or bound port (SUB-03).
   4. Concurrency caps and per-child cost accounting appear in the session record (SUB-04).
+
 **Plans**: TBD
 
 ### Phase 8: Memory Runtime & Bundling
+
 **Goal**: HALO boots a bundled memory service on Windows with no Docker and no GPU: native PostgreSQL+pgvector, supervised CPU llama.cpp inference sidecars and embedded Hindsight.
 **Mode:** mvp
 **Depends on**: Phase 4 (shared contracts and provider transport); may run in parallel with Phases 5–7
@@ -135,9 +174,11 @@ HALO is assembled, not written from scratch: four MIT codebases are imported onc
   3. Embedder and reranker `llama-server` sidecars start, health-check, restart on failure, and apply hardware-profile flags on ephemeral ports (MEM-03).
   4. Hindsight API and worker run embedded with per-operation LLM configuration, and the degraded-mode fallback is documented as a recorded decision (MEM-04).
   5. Retain is idempotent via `operation_id` with transactional boundaries and a startup repair job, so a cancelled retain never leaves an unretrievable memory (MEM-06).
+
 **Plans**: TBD
 
 ### Phase 9: Four-Lane Scheduling & Lane SLOs
+
 **Goal**: Memory traffic can never queue ahead of the user's prompt: four lanes with reserved capacity, revocable leases and measurable SLOs.
 **Mode:** mvp
 **Depends on**: Phase 8
@@ -148,9 +189,11 @@ HALO is assembled, not written from scratch: four MIT codebases are imported onc
   3. L1 meets its 10 s deadline or degrades to a low-budget recall with a visible degraded signal, and one prompt never triggers retries inside the same turn (SCHD-03).
   4. Preemption cancels only at operation boundaries and requeues or retires cancelled work without corrupting memory state (SCHD-04).
   5. A Low-profile soak (concurrent L3 retains plus periodic L0 recalls) demonstrates the lane SLOs under concurrency (SCHD-07).
+
 **Plans**: TBD
 
 ### Phase 10: Desktop & CLI Product Surface
+
 **Goal**: Desktop and CLI are two clients of one daemon, and chat, sessions, memory, lanes, approvals and settings are visible and controllable from the product surface.
 **Mode:** mvp
 **Depends on**: Phase 9
@@ -161,10 +204,12 @@ HALO is assembled, not written from scratch: four MIT codebases are imported onc
   3. The renderer holds no daemon token and every IPC message is sender-validated; a renderer fetch to the daemon port fails (UI-03).
   4. The memory page browses, searches, prunes and exports memories and shows staleness, conflicts, health and degraded memory; pruning requires typed confirmation and archives rather than deletes (MEM-05, MEM-07, MEM-08).
   5. The Memory Model defaults to the main agent model, the Settings page offers dedicated and per-operation overrides with save-time reachability validation and drain-then-restart on apply, and lane depths, wait histograms, preemptions and backlog are visible (SCHD-05, SCHD-06).
+
 **Plans**: TBD
 **UI hint**: yes
 
 ### Phase 11: Skills, Plugins, GSD & Kanban
+
 **Goal**: The extension surface is additive and still governed: skills, plugins, Kanban, GSD TDD and the advisor work only through the gate.
 **Mode:** mvp
 **Depends on**: Phase 10
@@ -175,10 +220,12 @@ HALO is assembled, not written from scratch: four MIT codebases are imported onc
   3. Kanban dispatches tasks with dependencies, heartbeats, reclaim, zombie detection and all 14 kanban tools (EXT-03).
   4. GSD TDD skills are installed as first-class skills in both the Hermes registry and the coding core's skill directory, and the gate blocks RED→GREEN without recorded failing-test evidence while coding-core extensions stay disabled (EXT-04, EXT-05).
   5. The advisor reviews a turn and injects notes without a separate turn, and plan/goal/vibe modes plus prewalk run inside the unified loop (EXT-07, EXT-08).
+
 **Plans**: TBD
 **UI hint**: yes
 
 ### Phase 12: Hardening, Packaging & Release
+
 **Goal**: The product installs and runs on a clean Windows machine from one build command, with every shipped surface proven governed and no leaked secrets or orphaned processes.
 **Mode:** mvp
 **Depends on**: Phases 1–11
@@ -189,6 +236,7 @@ HALO is assembled, not written from scratch: four MIT codebases are imported onc
   3. Paths beyond 260 characters and non-UTF8 child output work without crashing; a redaction audit proves model credentials never reach logs; model provisioning is SHA-256-verified at install and works offline (PLAT-05, PLAT-06, PLAT-07).
   4. A bypass matrix test covers every inventoried entry point (plugin handlers, MCP, host tools, subagents, cron/Kanban workers, eval re-entry, renderer) and fails if any produces a side effect without a policy decision (GATE-04).
   5. `THIRD_PARTY_NOTICES` lists all four subtrees plus all three dependency ecosystems and is reachable from the installer and About, and a reachability audit reconciles every loop-resident capability as ported or explicitly retired (IMPT-04, PLAT-08).
+
 **Plans**: TBD
 
 ## Progress

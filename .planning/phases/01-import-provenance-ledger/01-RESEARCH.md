@@ -356,7 +356,7 @@ The failure modes are documented, not hypothetical:
 {
   "schema": "halo/paths/v1",
   "subtree": "oh-my-pi",
-  "resolution": "longest-prefix-first, then file rules, then identity",
+  "resolution": "exceptions first, then longest-prefix-first, then file rules, then identity (a path matched by both a prefix rule and a file exception resolves by the exception)",
   "rules": [
     { "kind": "prefix", "from": "packages/", "to": "packages/", "reason": "verbatim subtree" },
     { "kind": "prefix", "from": "crates/",   "to": "crates/",   "reason": "verbatim subtree" },
@@ -986,19 +986,25 @@ done < vendor/oh-my-pi/provenance/patches/series
    *Known:* GitHub `size` is 0.7 GB / 1.3 GB / 0.8 GB / 0.5 MB.
    *Unclear:* how much is history vs. tree vs. LFS.
    *Recommendation:* measure with `du` after fetch, before the first commit; decide excludes then.
+   *(RESOLVED: measured at import time — `import` in `stage.ts` prints `SIZE <tree> files=<n> bytes=<n>` from `git ls-tree -r -l <sha>` before extraction, and the importing task stops at the 600 MB budget, recording the measured figure in the SUMMARY. Owner of the signal: plan 01-01 Task 1, which every later import reuses; consumers: 01-03 Task 2 for `hermes-agent`, 01-03 Task 3 for `hindsight`, 01-04 Task 1 for `oh-my-pi`.)*
 2. **Do the trees contain symlinks or gitlinks?**
    *Known:* neither repo's `.gitattributes` proves anything either way.
    *Recommendation:* the I6 pre-flight answers it in seconds; the plan must not assume "no".
+   *(RESOLVED: the preflight enumerates `git ls-tree -r` and gates both modes — a `160000` entry exits 2 with `submodule entry: <path>`, and every `120000` link text is read from the blob and rejected when absolute or escaping (T-1-11). Owners: plan 01-01 Task 1 (gate scaffolding), 01-02 Task 3 (symlink gate), 01-04 Task 1 (assert on the largest tree).)*
 3. **Does `hindsight` support Python 3.13/3.14?**
    *Known:* its `pyproject.toml` is a uv workspace with constraints; `requires-python` was not read (the file begins with `[tool.uv.workspace]`).
    *Recommendation:* read `requires-python` at import and record it in `UPSTREAM.json`; do not assume the system 3.13.15 is acceptable.
+   *(RESOLVED: plan 01-03 reads `requires-python` at import and records it in `UPSTREAM.json.notes`; this root declares none, so the members' declarations (`hindsight-api`, `hindsight-all`, `hindsight-embed` all `>=3.11`) are recorded under `notes["requires-python-members"]` and the root is recorded as declaring none. Phase 1 makes no claim that the system interpreter can run either Python tree, and no install is attempted.)*
 4. **Where does the replay run — local pre-commit or CI only?**
    *Known:* `provenance-verify` is cheap; `provenance-replay` needs the cache.
    *Recommendation:* verify on every commit (hook + CI), replay on CI with a cached bare mirror.
+   *(RESOLVED: DEC-09 + DEC-02 — `provenance-verify` runs in the `.githooks/pre-commit` hook (plan 01-08) and in CI; `provenance-replay` runs from the root `justfile` and in the `.github/workflows/provenance.yml` job (plan 01-09), with the bare cache restored and a `fetch --all --from-ledger` step covering a cold cache.)*
 5. **Is the "synthetic upstream fix" drill a permanent test or a one-off acceptance?**
    *Recommendation:* permanent, against a tiny fixture repo — it is the only test that proves IMPT-05 stays true after Phase 1.
+   *(RESOLVED: DEC-10 — permanent fixture-backed test at `tests/provenance/cve-drill.test.ts`, owned by plan 01-07 Task 3 and listed in every watch entry's `contract_tests`.)*
 6. **Does `vendor-build` belong in Phase 1 at all?**
    *Recommendation:* yes, but only as a smoke gate, because "the import is faithful" and "the import compiles" are different claims and the phase should report them separately.
+   *(RESOLVED — superseded by DEC-08: `vendor-build` is out of the Phase 1 gate. `cargo`/Node 24 are absent and a red build would block the phase without saying anything about provenance; the compilation smoke moves to the first phase that needs a built core.)*
 
 ---
 
