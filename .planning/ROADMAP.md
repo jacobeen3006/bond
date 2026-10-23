@@ -177,27 +177,28 @@ Plans:
   4. Every registry entry declares capability classes, and a call from a turn context that does not permit those capabilities is denied (GATE-06).
   5. Approval modes (auto-approve, allowlist, YOLO) are per-session policies, and a denied write leaves no side effect on disk (GATE-07).
 
-**Plans:** 7 plans
+**Plans:** 8 plans
 
 Plans:
 **Wave 1**
 - [ ] 04-01-PLAN.md — Seam re-validation, denied-state decision, and the governed-call tracer: registry → gate → dispatch → decision row → tool row, with a denial proven to write nothing
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 04-02-PLAN.md — Precedence enforcement (duplicate names, owned-name claims, unregistered backends) + winners-only catalog with backend-named descriptions and a byte-pinned snapshot
-- [ ] 04-03-PLAN.md — Safety-rule family (deny floor, exact capability-class matching, Windows workspace escape) + GATE-02 end-to-end denial lane + capability matrix, gate purity and 5 ms budget
+- [ ] 04-02-PLAN.md — Formal `tools/backends/` package (marker + `echo_test.py` + import-time purity) + shared `tests/conftest.py` scaffolding (scripted stream, registry fixture, backends, `sandbox_dir`) + package markers
+- [ ] 04-03-PLAN.md — Precedence enforcement (duplicate names, owned-name claims, unregistered backends) + winners-only catalog with backend-named descriptions and a byte-pinned snapshot
+- [ ] 04-04-PLAN.md — Safety-rule family (deny floor, exact capability-class matching, Windows workspace escape) + GATE-02 end-to-end denial lane + capability matrix, gate purity and 5 ms budget
 
 **Wave 3** *(blocked on Wave 2 completion)*
-- [ ] 04-04-PLAN.md — Argument rewriting that can only narrow (both hashes recorded, model bytes untouched) + decision-record completeness
+- [ ] 04-05-PLAN.md — Argument rewriting that can only narrow (both hashes recorded, model bytes untouched) + decision-record completeness
 
 **Wave 4** *(blocked on Wave 3 completion)*
-- [ ] 04-05-PLAN.md — Per-session approval modes (`auto_approve` / `allowlist` / `yolo`) with the deny floor below them, restart survival, and a denied write leaving nothing on disk
+- [ ] 04-06-PLAN.md — Per-session approval modes (`auto_approve` / `allowlist` / `yolo`) with the deny floor below them, restart survival, and a denied write leaving nothing on disk
 
 **Wave 5** *(blocked on Wave 4 completion)*
-- [ ] 04-06-PLAN.md — One-door scanner rules + `ungoverned_dispatch` guard-test lane and the decision-join inventory Phase 12's GATE-04 matrix inherits
+- [ ] 04-07-PLAN.md — One-door scanner rules + `ungoverned_dispatch` guard-test lane and the decision-join inventory Phase 12's GATE-04 matrix inherits
 
 **Wave 6** *(blocked on Wave 5 completion)*
-- [ ] 04-07-PLAN.md — Full-gate evidence run, criterion-to-test and decision-to-code walk, fifteen-row edge-coverage accounting, end-of-phase human verification record
+- [ ] 04-08-PLAN.md — Full-gate evidence run, criterion-to-test and decision-to-code walk, fifteen-row edge-coverage accounting, end-of-phase human verification record
 
 ### Phase 5: Coding Core over RPC
 

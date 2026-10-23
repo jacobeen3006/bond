@@ -478,28 +478,28 @@ async def test_denied_unknown_tool_leaves_no_side_effect(store, loop, tmp_path):
 | A9 | No vendored `vendor/hermes-agent` patch is needed by Phase 4 (interception deletion + registry empty-guard are 03-07's) | Summary | If 03-07's `build_runtime` guard lands differently, a Phase-4 patch must go through `patches/series` |
 | A10 | `ToolRequest` unification via trailing defaulted fields keeps 03-07 call sites compiling | Fork G5 | If the frozen dataclass is constructed with `__slots__`/strict kwargs at execute, extend-and-wrap instead; verify against landed 03-07 code first |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Fork G1 vs G2 — where does gate evaluation sit relative to `mark_dispatched`?** *(planner must pick one)*
+1. **Fork G1 vs G2 — where does gate evaluation sit relative to `mark_dispatched`?** *(planner must pick one)* — RESOLVED → 04-DECISIONS.md: D-G1
    - What we know: Phase 3 order reserve → `mark_dispatched` (all) → `dispatch_batch`; test asserts dispatched-at-entry [VERIFIED: 03-07-PLAN.md:155-160]; `dispatched` = side-effect-possible [VERIFIED: 03-RESEARCH.md:601]; ARCH shows resolve+gate as adapter batch-admission steps before dispatch [VERIFIED: ARCHITECTURE.md:147-151].
    - G1 (recommended): new `adapter.admit_batch(turn_id, requests, snap) -> tuple[BatchAdmission, ...]` between reserve and mark-dispatched; loop marks-dispatches allowed calls only. Denied rows: `reserved → failed(policy_denied)` + synthetic message row; dispatch-at-entry assertion holds for allowed calls; denied calls provably never dispatched. Edits `run_turn` + `test_agent_loop` Case B (explicitly, in the plan).
    - G2: fold admission into `dispatch_batch` (dispatcher calls gate first, dispatches allowed subset). Zero loop edits; but denied rows transition through a `dispatched` mark that lied for microseconds, and crash-window recovery would report `unknown` for calls that provably never ran — acceptable only if `finished_at`+decision rows are the authority. Also forces the dispatcher to write invocation rows (writer-boundary crossing).
    - Recommendation: **G1** — keeps `mark_dispatched` the truth-bearing "about to execute" mark the whole recovery design depends on.
 
-2. **Fork G2(state) — how is a denial represented in `tool_invocations.state`?**
+2. **Fork G2(state) — how is a denial represented in `tool_invocations.state`?** — RESOLVED → 04-DECISIONS.md: D-G2-state
    - Known: CHECK list is closed [VERIFIED: 03-RESEARCH.md:479].
    - Option a (recommended): `failed` + `error_kind='policy_denied'` — pure-additive migration, all six states survive, Phase 3 tests unaffected; GATE-02/03/07 criteria read reason from the decision row, not the state.
    - Option b: add `denied` state — rebuild `tool_invocations` in the migration (recreate indexes; re-add `tool_invocations_dispatch_guard` after); makes "denied" queryable by state but touches a table Phase 3's 17-table census + 03-03/04/07 logic depend on.
 
-3. **Fork G3 — backend vocabulary.** `PHASE3_BACKEND = "runtime"` [VERIFIED: 03-07-PLAN.md:155] vs ARCH `Literal["halo","hermes","omp","mcp","cli","plugin"]` [VERIFIED: ARCHITECTURE.md:202]. Recommendation: Phase 4 keeps `runtime` as the first registry-owned backend name (zero Phase 3 churn; decision rows carry it), updates ARCH's set by amending the doc to include `runtime` (or maps `runtime`→`halo` in one rename task with full test updates — pick at planning, then update all sites; no shims).
+3. **Fork G3 — backend vocabulary.** `PHASE3_BACKEND = "runtime"` [VERIFIED: 03-07-PLAN.md:155] vs ARCH `Literal["halo","hermes","omp","mcp","cli","plugin"]` [VERIFIED: ARCHITECTURE.md:202]. Recommendation: Phase 4 keeps `runtime` as the first registry-owned backend name (zero Phase 3 churn; decision rows carry it), updates ARCH's set by amending the doc to include `runtime` (or maps `runtime`→`halo` in one rename task with full test updates — pick at planning, then update all sites; no shims). — RESOLVED → 04-DECISIONS.md: D-G3
 
-4. **Fork G4 — contract format.** `.yaml` per ARCHITECTURE.md literal [VERIFIED: ARCHITECTURE.md:174, 773] vs JSON per Phase 2's `contracts/rpc-wire.json` convention. Recommendation: JSON (no new dep, avoids the SUS pyyaml checkpoint); record the divergence in the plan's decision log.
+4. **Fork G4 — contract format.** `.yaml` per ARCHITECTURE.md literal [VERIFIED: ARCHITECTURE.md:174, 773] vs JSON per Phase 2's `contracts/rpc-wire.json` convention. Recommendation: JSON (no new dep, avoids the SUS pyyaml checkpoint); record the divergence in the plan's decision log. — RESOLVED → 04-DECISIONS.md: D-G4
 
-5. **Fork G5 — one `ToolRequest` or two?** ARCH's rich shape vs Phase 3's 5-field dispatch shape [VERIFIED: 03-07-PLAN.md:155]. Recommendation: extend Phase 3's dataclass with trailing defaulted fields (`session_id=""`, `turn_id=""`, `capabilities=frozenset()`, `cwd=""`, `phase=None`, `agent_kind="main"`) so one type flows loop→adapter→gate; `agent_kind="main"` is the only producer until Phase 7.
+5. **Fork G5 — one `ToolRequest` or two?** ARCH's rich shape vs Phase 3's 5-field dispatch shape [VERIFIED: 03-07-PLAN.md:155]. Recommendation: extend Phase 3's dataclass with trailing defaulted fields (`session_id=""`, `turn_id=""`, `capabilities=frozenset()`, `cwd=""`, `phase=None`, `agent_kind="main"`) so one type flows loop→adapter→gate; `agent_kind="main"` is the only producer until Phase 7. — RESOLVED → 04-DECISIONS.md: D-G5
 
-6. **`ask` verdict before Phase 10.** What happens to an `ask`-class decision when no approval surface exists? Recommendation: deny with `rule_ids=('unattended',)` (Hermes does exactly this for unattended contexts: "deny blocks the command instantly" [CITED: security]); the verdict value stays in the enum so UI-05 lands additively.
+6. **`ask` verdict before Phase 10.** What happens to an `ask`-class decision when no approval surface exists? Recommendation: deny with `rule_ids=('unattended',)` (Hermes does exactly this for unattended contexts: "deny blocks the command instantly" [CITED: security]); the verdict value stays in the enum so UI-05 lands additively. — RESOLVED → 04-DECISIONS.md: D-ASK
 
-7. **Python 3.14.9 unavailable to uv on this workstation** (03-RESEARCH R11; re-observed today: `uv python list` shows `cpython-3.14.7-windows-x86_64-none` installed, 3.14.9 not fetchable with uv 0.12.17). Same `D-PYTHON:` escape hatch as Phase 3's plan 03-01 [VERIFIED: 03-01-PLAN.md:204]; pin resolves itself when Phases 1/3 execute with pinned uv 0.13.5.
+7. **Python 3.14.9 unavailable to uv on this workstation** (03-RESEARCH R11; re-observed today: `uv python list` shows `cpython-3.14.7-windows-x86_64-none` installed, 3.14.9 not fetchable with uv 0.12.17). Same `D-PYTHON:` escape hatch as Phase 3's plan 03-01 [VERIFIED: 03-01-PLAN.md:204]; pin resolves itself when Phases 1/3 execute with pinned uv 0.13.5. — RESOLVED → 04-DECISIONS.md: D-G7
 
 ## Environment Availability
 
