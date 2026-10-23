@@ -86,7 +86,18 @@ Plans:
   4. Old wire names are accepted for one minor version with a deprecation warning and are rejected afterwards (BRND-06).
   5. An existing Hermes/OMP profile migrates by copy-verify with a `.migrated-from` marker (fresh, legacy-only, both-present and deny-listed-plugin fixtures pass), and plugin allow-lists and entry points survive the rename without silently disabling a plugin (BRND-03, BRND-08).
 
-**Plans**: TBD
+**Plans**: 9 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — brand.json + schema + byte-stable generator: TS/Rust/Python constants, legacy-env tables, rename rules, deny tokens, drift gate (tracer)
+- [ ] 02-02-PLAN.md — Wire naming decision, contracts/rpc-wire.json, cross-language codecs + canonical contract hash, rpc-types.ts census (no hardcoded counts)
+- [ ] 02-03-PLAN.md — Handshake with contract_mismatch refusal (absent-hash = mismatch, no force flag) + one-minor alias window + core-side patch into the ledger
+- [ ] 02-04-PLAN.md — [SUS] ast-grep checkpoint + shared rewrite engine, resume-safe apply pipeline, replay content-rename pass
+- [ ] 02-05-PLAN.md — gsd-core boundary sign-off, rule authoring from inventory, rebrand run on all four trees, post-run whole-repo assertions
+- [ ] 02-06-PLAN.md — HALO home resolution, copy-only migration with .migrated-from marker, both-present refusal, secret handling, startup wiring
+- [ ] 02-07-PLAN.md — Plugin survival: dual entry-point group + fail-loud loader patches, id-bearing rename rules, four-cell matrix
+- [ ] 02-08-PLAN.md — deny-gate (planted-token self-proof, dual allow-list, dead-entry refusal) + rebrand-verify CI chain
+- [ ] 02-09-PLAN.md — Rust verification decision (Q5), compiled CLI surface proof, phase-close evidence walk over all five success criteria
 
 ### Phase 3: Unified Loop & Session Authority
 
