@@ -77,7 +77,7 @@ D-G7: default-auto-approve
   the session's other rows, with `allowlist='[]'` and `session_grants='[]'`. Safety and capability
   rules still deny by default, so the default is permissive only about escalation, never about the
   deny floor. Flagged, not settled by the user: if product wants allowlist-by-default, the change
-  is one INSERT default plus one CHECK; plan 04-05 records the observation.
+  is one INSERT default plus one CHECK; plan 04-06 records the observation.
 
 ## Interpreter pin (conditional, appended at execution)
 
