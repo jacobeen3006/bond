@@ -129,7 +129,36 @@ Plans:
   4. Every context item the model received appears in the visible transcript with a stable identity, and the mirrored-vs-sent hash check passes on a turn larger than 1 MiB (LOOP-05).
   5. A turn is marked complete only on an authoritative terminal signal; outstanding background work keeps it open and a finished turn never reopens (LOOP-06).
 
-**Plans**: TBD
+**Plans:** 12 plans
+
+Plans:
+**Wave 1**
+- [ ] 03-01-PLAN.md — Package-root decision, Wave-0 bootstrap, and the one-store WAL tracer with a cross-process reader
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 03-02-PLAN.md — Legacy-store decision, epoch ownership, remote-path and schema-version refusals
+- [ ] 03-04-PLAN.md — Turn lifecycle: one terminal predicate, close writer, DB reopen/append guards, quiescence
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [ ] 03-03-PLAN.md — Durable admission FIFO, killed-child `unknown` recovery, FTS audit and repair
+- [ ] 03-05-PLAN.md — One request builder, HTTP byte recording, per-position mirror hashes, >2 MiB safety
+
+**Wave 4** *(blocked on Wave 3 completion)*
+- [ ] 03-06-PLAN.md — Redaction at admission and request build, with full-store and full-log canary sweep
+- [ ] 03-07-PLAN.md — Vendor seam decision, single-loop authority, one real turn, AST/authority/protocol gates
+
+**Wave 5** *(blocked on Wave 4 completion)*
+- [ ] 03-08-PLAN.md — Steer, queue, follow-up and interrupt with synthetic results and alternation validation
+- [ ] 03-09-PLAN.md — Resume/list/FTS5 search/branch/export/import and the minimal `halo-agent sessions` verbs
+
+**Wave 6** *(blocked on Wave 5 completion)*
+- [ ] 03-10-PLAN.md — Loop-owned compaction: generation rotation, fail-closed checkpoint, provider-truth accounting
+
+**Wave 7** *(blocked on Wave 6 completion)*
+- [ ] 03-11-PLAN.md — Twelve-fixture deterministic eval corpus, `just eval`, CI gate and on-demand judge lane
+
+**Wave 8** *(blocked on Wave 7 completion)*
+- [ ] 03-12-PLAN.md — Full-gate evidence walk, criterion-to-test map, and end-of-phase human verification record
 
 ### Phase 4: Tool Registry & Policy Gate
 
@@ -276,7 +305,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 |-------|----------------|--------|-----------|
 | 1. Import & Provenance Ledger | 0/TBD | Not started | - |
 | 2. Rebrand, Wire Contract & Migration | 0/TBD | Not started | - |
-| 3. Unified Loop & Session Authority | 0/TBD | Not started | - |
+| 3. Unified Loop & Session Authority | 0/12 | Not started | - |
 | 4. Tool Registry & Policy Gate | 0/TBD | Not started | - |
 | 5. Coding Core over RPC | 0/TBD | Not started | - |
 | 6. Code Intelligence, Execution & Rollback | 0/TBD | Not started | - |

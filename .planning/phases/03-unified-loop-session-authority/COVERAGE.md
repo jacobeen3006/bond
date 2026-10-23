@@ -1,0 +1,1 @@
+No external API integration: Phase 3 adds no third-party API/SDK; its only egress is the vendored Hermes provider transport, recorded but not extended. New surfaces are local SQLite and a loopback mock.
