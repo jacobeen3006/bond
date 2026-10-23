@@ -3,10 +3,10 @@ gsd_state_version: "1.0"
 current_phase: 3
 current_phase_name: Unified Loop & Session Authority
 status: executing
-stopped_at: Roadmap and traceability created; Phase 1 ready to plan
+stopped_at: Phase 3 planned — 12 plans across 10 waves, AI-SPEC + research + validation committed; ready to execute
 last_updated: "2026-10-23T09:09:44.692Z"
 last_activity: 2026-10-23
-last_activity_desc: Roadmap created; 82 of 82 v1 requirements mapped to 12 phases
+last_activity_desc: Phase 3 planned (12 plans, 10 waves; AI-SPEC generated first, 19 checker issues resolved over 3 revision rounds)
 state_head: 171f04910a73d26515a5b7c745f986a233688cfb
 progress:
   total_phases: 12
@@ -23,14 +23,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-10-23)
 
 **Core value:** One non-bypassable tool path — every LLM tool decision reaches exactly one backend through a single adapter and a single policy gate, so no policy (TDD enforcement, safety, memory routing) can be skipped by choosing the other runtime.
-**Current focus:** Phase 1 — Import & Provenance Ledger
+**Current focus:** Phase 3 — Unified Loop & Session Authority
 
 ## Current Position
 
 Phase: 3 (Unified Loop & Session Authority) — READY TO EXECUTE
-Plan: 0 of TBD in current phase
+Plan: 0 of 12 in current phase (10 waves)
 Status: Ready to execute
-Last activity: 2026-10-23 — Roadmap created; 82 of 82 v1 requirements mapped to 12 phases
+Last activity: 2026-10-23 — Phase 3 planned; AI-SPEC (custom loop over vendored Hermes), research, validation contract and 12 plans committed
 
 Progress: [░░░░░░░░░░] 0%
 
