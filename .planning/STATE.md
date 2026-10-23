@@ -1,17 +1,17 @@
 ---
 gsd_state_version: "1.0"
-current_phase: 3
-current_phase_name: Unified Loop & Session Authority
-status: executing
-stopped_at: Phase 3 planned — 12 plans across 10 waves, AI-SPEC + research + validation committed; ready to execute
-last_updated: "2026-10-23T09:09:44.692Z"
-last_activity: 2026-10-23
-last_activity_desc: Phase 3 planned (12 plans, 10 waves; AI-SPEC generated first, 19 checker issues resolved over 3 revision rounds)
-state_head: 171f04910a73d26515a5b7c745f986a233688cfb
+current_phase: 4
+current_phase_name: Tool Registry & Policy Gate
+status: planned
+stopped_at: Phase 4 planned — 8 plans across 6 waves, research + validation + decisions committed; ready to execute
+last_updated: "2026-10-23T22:21:35.712Z"
+last_activity: 2026-10-24
+last_activity_desc: Phase 4 planned (8 plans, 6 waves; 2 revision rounds, all checker warnings resolved)
+state_head: 9826fe5b36125766b24f022dc7da7f19e7b89b98
 progress:
   total_phases: 12
   completed_phases: 0
-  total_plans: 30
+  total_plans: 38
   completed_plans: 0
   percent: 0
 ---
@@ -23,14 +23,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-10-23)
 
 **Core value:** One non-bypassable tool path — every LLM tool decision reaches exactly one backend through a single adapter and a single policy gate, so no policy (TDD enforcement, safety, memory routing) can be skipped by choosing the other runtime.
-**Current focus:** Phase 3 — Unified Loop & Session Authority
+**Current focus:** Phase 4 — Tool Registry & Policy Gate
 
 ## Current Position
 
-Phase: 3 (Unified Loop & Session Authority) — READY TO EXECUTE
-Plan: 0 of 12 in current phase (10 waves)
+Phase: 4 (Tool Registry & Policy Gate) — READY TO EXECUTE
+Plan: 0 of 8 in current phase (6 waves)
 Status: Ready to execute
-Last activity: 2026-10-23 — Phase 3 planned; AI-SPEC (custom loop over vendored Hermes), research, validation contract and 12 plans committed
+Last activity: 2026-10-24 — Phase 4 planned; research, validation contract, decisions and 8 plans committed
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -90,6 +90,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-23
-Stopped at: Roadmap and traceability created; Phase 1 ready to plan
+Last session: 2026-10-24
+Stopped at: Phase 4 planned — 8 plans across 6 waves, ready to execute
 Resume file: None
