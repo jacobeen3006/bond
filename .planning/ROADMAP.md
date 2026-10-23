@@ -138,26 +138,30 @@ Plans:
 **Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 03-02-PLAN.md — Legacy-store decision, epoch ownership, remote-path and schema-version refusals
 - [ ] 03-04-PLAN.md — Turn lifecycle: one terminal predicate, close writer, DB reopen/append guards, quiescence
+- [ ] 03-05-PLAN.md — One request builder, HTTP byte recording, per-position mirror hashes, >2 MiB safety
 
 **Wave 3** *(blocked on Wave 2 completion)*
 - [ ] 03-03-PLAN.md — Durable admission FIFO, killed-child `unknown` recovery, FTS audit and repair
-- [ ] 03-05-PLAN.md — One request builder, HTTP byte recording, per-position mirror hashes, >2 MiB safety
 
 **Wave 4** *(blocked on Wave 3 completion)*
 - [ ] 03-06-PLAN.md — Redaction at admission and request build, with full-store and full-log canary sweep
-- [ ] 03-07-PLAN.md — Vendor seam decision, single-loop authority, one real turn, AST/authority/protocol gates
 
 **Wave 5** *(blocked on Wave 4 completion)*
-- [ ] 03-08-PLAN.md — Steer, queue, follow-up and interrupt with synthetic results and alternation validation
-- [ ] 03-09-PLAN.md — Resume/list/FTS5 search/branch/export/import and the minimal `halo-agent sessions` verbs
+- [ ] 03-07-PLAN.md — Vendor seam decision, single-loop authority, tool-calling turn loop through `dispatch_batch`, AST/authority/protocol gates
 
 **Wave 6** *(blocked on Wave 5 completion)*
-- [ ] 03-10-PLAN.md — Loop-owned compaction: generation rotation, fail-closed checkpoint, provider-truth accounting
+- [ ] 03-08-PLAN.md — Steer, queue, follow-up and interrupt with synthetic results and alternation validation
 
 **Wave 7** *(blocked on Wave 6 completion)*
-- [ ] 03-11-PLAN.md — Twelve-fixture deterministic eval corpus, `just eval`, CI gate and on-demand judge lane
+- [ ] 03-09-PLAN.md — Resume/list/FTS5 search/branch/export/import with the installed `halo-agent sessions` console script
 
 **Wave 8** *(blocked on Wave 7 completion)*
+- [ ] 03-10-PLAN.md — Loop-owned compaction: generation rotation, fail-closed checkpoint, provider-truth accounting
+
+**Wave 9** *(blocked on Wave 8 completion)*
+- [ ] 03-11-PLAN.md — Twelve-fixture deterministic eval corpus, `just eval`, CI gate and on-demand judge lane
+
+**Wave 10** *(blocked on Wave 9 completion)*
 - [ ] 03-12-PLAN.md — Full-gate evidence walk, criterion-to-test map, and end-of-phase human verification record
 
 ### Phase 4: Tool Registry & Policy Gate

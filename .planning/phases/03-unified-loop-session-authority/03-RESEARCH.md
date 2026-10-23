@@ -1044,26 +1044,33 @@ def audit_fts(conn, *, repair: bool) -> list[str]:
 | R15 | Whether the loop can be constructed without upstream's gateway/session manager starting its own writer | vendored `agent_init.py` | Two writers would violate LOOP-02 | Explicitly disable upstream persistence; if unavoidable, that is the one place a patch is mandatory |
 | R16 | **Phase 2's home migration copies a legacy Hermes `state.db` into HALO's home.** The copy is a whole-tree walk with per-file digests, and the secret list already includes `sessions/` [VERIFIED: `02-06-PLAN.md:121,155`]. | `halo_agent/migrate.py` or Phase 3's store-open | Without a rule, the first open sees upstream schema v31 under HALO's path: either a corrupt-looking store or, worse, a partially "reconciled" one | Phase 3 detects `halo_schema_version` absence and refuses (typed error naming the file); the clean fix is a one-line exclusion/relocation in Phase 2's migration (`state.db*` → `<home>\legacy\hermes-state.db`), which must be agreed before Phase 2 executes |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Where does the minimal LOOP-03 surface live?**
+All five questions are resolved; each resolution names the artifact that implements it. Nothing below is open for planning.
+
+1. **Where does the minimal LOOP-03 surface live?** (RESOLVED)
    - What we know: "User can resume, list, search, branch, export" must be demonstrable in Phase 3, but "No Desktop/CLI surface before the session authority (Phase 3); the product surface lands at Phase 10" [VERIFIED: `STATE.md:66`].
    - Unclear: whether a console script counts as a "surface".
    - Recommendation: ship `halo-agent sessions <verb>` as a thin argument parser over `state/sessions.py`, tested as a subprocess; Phase 10 replaces the UX, not the implementation. Keep it to the five verbs — no chat loop, no renderer.
+   - **RESOLVED —** a console script is plumbing, not a product surface. Plan 09 ships `halo_agent/cli.py`, registers `[project.scripts] halo-agent = "halo_agent.cli:main"` in `packages/halo_agent/pyproject.toml`, and exercises the installed executable from a subprocess test.
 
-2. **Does Phase 3 rewrite Phase 2's generated path, or work around it?**
+2. **Does Phase 3 rewrite Phase 2's generated path, or work around it?** (RESOLVED)
    - Recommendation: resolve R12 before Phase 2 executes, in preference order: (a) declare `runtime/shared_contracts/halo_agent` as an extra package root of the `packages/halo_agent` distribution, (b) rename Phase 2's Python package directory to `halo_contracts`, (c) an `importlib` loader confined to one module. Every option must keep Phase 2's own `from halo_agent.migrate import …` check green.
+   - **RESOLVED —** plan 01's blocking `checkpoint:decision` records `D-R12` in `03-DECISIONS.md` before any loop code, and the tracer implements exactly the recorded option; its resolution test proves `halo_agent.state` and Phase 2's `halo_agent.migrate` resolve in one interpreter.
 
-3. **Is `synchronous=FULL` acceptable on the target disk?**
+3. **Is `synchronous=FULL` acceptable on the target disk?** (RESOLVED)
    - What we know: each commit fsyncs; the transcript is the product's only durable artifact.
    - Unclear: measured commit latency on the Low profile.
    - Recommendation: ship `FULL`, add a benchmark task, and only then consider `NORMAL` with a documented durability trade-off. Never change it silently.
+   - **RESOLVED —** plan 01 sets `synchronous=FULL` in the writer pragma order (`journal_mode=WAL` → `synchronous=FULL` → `foreign_keys=ON` → `busy_timeout=5000`), and plan 02's checkpoint-health signal measures the write path. No plan in Phase 3 may switch to `NORMAL`; a deviation requires a recorded decision first.
 
-4. **Compaction archive medium in Phase 3.**
+4. **Compaction archive medium in Phase 3.** (RESOLVED)
    - Recommendation: SQLite `compaction_archives` rows (durable, idempotent, same transaction domain); Phase 8 mirrors to Hindsight without changing the contract. Do not ship a "TODO: memory" stub — the row *is* the real archive.
+   - **RESOLVED —** plan 10's `TranscriptArchiveProvider.on_pre_compress` writes one durable, idempotent `compaction_archives` row (unique on `(session_id, digest)`) inside a committed transaction and returns `checkpoint:sha256:<digest>`; a failed insert blocks the rewrite instead of degrading to a stub.
 
-5. **Should `messages` become append-only with flags in a separate table?**
+5. **Should `messages` become append-only with flags in a separate table?** (RESOLVED)
    - Recommendation: not in Phase 3 — `UPDATE OF` already removes the FTS cost; revisit only if profiling shows the flag flips are expensive on 100K-row transcripts.
+   - **RESOLVED —** plan 01 transcribes `messages` with the flag columns on the table (`active`, `compacted`) and the `AFTER UPDATE OF content, tool_name, tool_calls` FTS trigger, so a flag flip re-indexes nothing; no append-only redesign and no second flag table in Phase 3.
 
 ## Environment Availability
 
