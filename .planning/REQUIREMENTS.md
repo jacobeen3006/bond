@@ -158,13 +158,113 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| *(populated during roadmap creation)* | — | — |
+| IMPT-01 | Phase 1 | Pending |
+| IMPT-02 | Phase 1 | Pending |
+| IMPT-03 | Phase 1 | Pending |
+| IMPT-04 | Phase 12 | Pending |
+| IMPT-05 | Phase 1 | Pending |
+| IMPT-06 | Phase 1 | Pending |
+| BRND-01 | Phase 2 | Pending |
+| BRND-02 | Phase 2 | Pending |
+| BRND-03 | Phase 2 | Pending |
+| BRND-04 | Phase 2 | Pending |
+| BRND-05 | Phase 2 | Pending |
+| BRND-06 | Phase 2 | Pending |
+| BRND-07 | Phase 2 | Pending |
+| BRND-08 | Phase 2 | Pending |
+| LOOP-01 | Phase 3 | Pending |
+| LOOP-02 | Phase 3 | Pending |
+| LOOP-03 | Phase 3 | Pending |
+| LOOP-04 | Phase 3 | Pending |
+| LOOP-05 | Phase 3 | Pending |
+| LOOP-06 | Phase 3 | Pending |
+| LOOP-07 | Phase 6 | Pending |
+| GATE-01 | Phase 4 | Pending |
+| GATE-02 | Phase 4 | Pending |
+| GATE-03 | Phase 4 | Pending |
+| GATE-04 | Phase 12 | Pending |
+| GATE-05 | Phase 4 | Pending |
+| GATE-06 | Phase 4 | Pending |
+| GATE-07 | Phase 4 | Pending |
+| CORE-01 | Phase 5 | Pending |
+| CORE-02 | Phase 5 | Pending |
+| CORE-03 | Phase 5 | Pending |
+| CORE-04 | Phase 5 | Pending |
+| CORE-05 | Phase 5 | Pending |
+| CORE-06 | Phase 5 | Pending |
+| CORE-07 | Phase 5 | Pending |
+| CORE-08 | Phase 5 | Pending |
+| CODE-01 | Phase 6 | Pending |
+| CODE-02 | Phase 6 | Pending |
+| CODE-03 | Phase 6 | Pending |
+| CODE-04 | Phase 6 | Pending |
+| CODE-05 | Phase 6 | Pending |
+| CODE-06 | Phase 6 | Pending |
+| SUB-01 | Phase 7 | Pending |
+| SUB-02 | Phase 7 | Pending |
+| SUB-03 | Phase 7 | Pending |
+| SUB-04 | Phase 7 | Pending |
+| MEM-01 | Phase 8 | Pending |
+| MEM-02 | Phase 8 | Pending |
+| MEM-03 | Phase 8 | Pending |
+| MEM-04 | Phase 8 | Pending |
+| MEM-05 | Phase 10 | Pending |
+| MEM-06 | Phase 8 | Pending |
+| MEM-07 | Phase 10 | Pending |
+| MEM-08 | Phase 10 | Pending |
+| SCHD-01 | Phase 9 | Pending |
+| SCHD-02 | Phase 9 | Pending |
+| SCHD-03 | Phase 9 | Pending |
+| SCHD-04 | Phase 9 | Pending |
+| SCHD-05 | Phase 10 | Pending |
+| SCHD-06 | Phase 10 | Pending |
+| SCHD-07 | Phase 9 | Pending |
+| UI-01 | Phase 10 | Pending |
+| UI-02 | Phase 10 | Pending |
+| UI-03 | Phase 10 | Pending |
+| UI-04 | Phase 10 | Pending |
+| UI-05 | Phase 10 | Pending |
+| EXT-01 | Phase 11 | Pending |
+| EXT-02 | Phase 11 | Pending |
+| EXT-03 | Phase 11 | Pending |
+| EXT-04 | Phase 11 | Pending |
+| EXT-05 | Phase 11 | Pending |
+| EXT-06 | Phase 11 | Pending |
+| EXT-07 | Phase 11 | Pending |
+| EXT-08 | Phase 11 | Pending |
+| PLAT-01 | Phase 12 | Pending |
+| PLAT-02 | Phase 12 | Pending |
+| PLAT-03 | Phase 12 | Pending |
+| PLAT-04 | Phase 12 | Pending |
+| PLAT-05 | Phase 12 | Pending |
+| PLAT-06 | Phase 12 | Pending |
+| PLAT-07 | Phase 12 | Pending |
+| PLAT-08 | Phase 12 | Pending |
 
 **Coverage:**
 - v1 requirements: 82 total
-- Mapped to phases: 0
-- Unmapped: 82 ⚠️
+- Mapped to phases: 82
+- Unmapped: 0 ✓
+- v2 requirements: 6 deferred, intentionally unmapped
+
+**Per-phase counts:**
+
+| Phase | Requirements |
+|-------|--------------|
+| 1. Import & Provenance Ledger | 5 |
+| 2. Rebrand, Wire Contract & Migration | 8 |
+| 3. Unified Loop & Session Authority | 6 |
+| 4. Tool Registry & Policy Gate | 6 |
+| 5. Coding Core over RPC | 8 |
+| 6. Code Intelligence, Execution & Rollback | 7 |
+| 7. Subagent Orchestration | 4 |
+| 8. Memory Runtime & Bundling | 5 |
+| 9. Four-Lane Scheduling & Lane SLOs | 5 |
+| 10. Desktop & CLI Product Surface | 10 |
+| 11. Skills, Plugins, GSD & Kanban | 8 |
+| 12. Hardening, Packaging & Release | 10 |
+| **Total** | **82** |
 
 ---
 *Requirements defined: 2026-10-23*
-*Last updated: 2026-10-23 after initial definition*
+*Last updated: 2026-10-23 after roadmap creation (82/82 mapped, 0 unmapped)*
