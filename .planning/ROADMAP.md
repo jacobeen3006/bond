@@ -89,14 +89,31 @@ Plans:
 **Plans**: 9 plans
 
 Plans:
+**Wave 1**
 - [ ] 02-01-PLAN.md — brand.json + schema + byte-stable generator: TS/Rust/Python constants, legacy-env tables, rename rules, deny tokens, drift gate (tracer)
+
+**Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 02-02-PLAN.md — Wire naming decision, contracts/rpc-wire.json, cross-language codecs + canonical contract hash, rpc-types.ts census (no hardcoded counts)
+
+**Wave 3** *(blocked on Wave 2 completion)*
 - [ ] 02-03-PLAN.md — Handshake with contract_mismatch refusal (absent-hash = mismatch, no force flag) + one-minor alias window + core-side patch into the ledger
+
+**Wave 4** *(blocked on Wave 3 completion)*
 - [ ] 02-04-PLAN.md — [SUS] ast-grep checkpoint + shared rewrite engine, resume-safe apply pipeline, replay content-rename pass
+
+**Wave 5** *(blocked on Wave 4 completion)*
 - [ ] 02-05-PLAN.md — gsd-core boundary sign-off, rule authoring from inventory, rebrand run on all four trees, post-run whole-repo assertions
+
+**Wave 6** *(blocked on Wave 5 completion)*
 - [ ] 02-06-PLAN.md — HALO home resolution, copy-only migration with .migrated-from marker, both-present refusal, secret handling, startup wiring
+
+**Wave 7** *(blocked on Wave 6 completion)*
 - [ ] 02-07-PLAN.md — Plugin survival: dual entry-point group + fail-loud loader patches, id-bearing rename rules, four-cell matrix
+
+**Wave 8** *(blocked on Wave 7 completion)*
 - [ ] 02-08-PLAN.md — deny-gate (planted-token self-proof, dual allow-list, dead-entry refusal) + rebrand-verify CI chain
+
+**Wave 9** *(blocked on Wave 8 completion)*
 - [ ] 02-09-PLAN.md — Rust verification decision (Q5), compiled CLI surface proof, phase-close evidence walk over all five success criteria
 
 ### Phase 3: Unified Loop & Session Authority
