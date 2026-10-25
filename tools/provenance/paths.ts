@@ -209,6 +209,41 @@ export function validateTreePaths(
   return findings;
 }
 
+const GLOB_CACHE = new Map<string, RegExp>();
+
+/**
+ * The one path-glob matcher for reader-facing path lists (the exclude rules and
+ * the `provenance-where` watch paths). `**` spans directories, `*` does not,
+ * `?` is one non-separator character, and everything else is literal. Case is
+ * preserved: these globs name files, unlike the licence deny-list's
+ * case-insensitive spelling matcher.
+ */
+export function globToRegExp(glob: string): RegExp {
+  const cached = GLOB_CACHE.get(glob);
+  if (cached !== undefined) return cached;
+
+  let source = '^';
+  for (let index = 0; index < glob.length; index += 1) {
+    const char = glob[index];
+    if (char === '*') {
+      if (glob[index + 1] === '*') {
+        source += '.*';
+        index += 1;
+        if (glob[index + 1] === '/') index += 1;
+      } else {
+        source += '[^/]*';
+      }
+    } else if (char === '?') {
+      source += '[^/]';
+    } else {
+      source += char.replace(/[.+^${}()|[\]\\]/g, '\\$&');
+    }
+  }
+  const regexp = new RegExp(`${source}$`);
+  GLOB_CACHE.set(glob, regexp);
+  return regexp;
+}
+
 /** Split a `tar -tf` listing into entries, tolerating CRLF line endings. */
 export function parseTarListing(listing: string): string[] {
   return listing

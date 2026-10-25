@@ -29,7 +29,13 @@ import {
   readManifestFile,
   type ManifestRow,
 } from './manifest';
-import { assertSafeArchiveEntries, inspectUnsafePath, parseTarListing, ProvenanceError } from './paths';
+import {
+  assertSafeArchiveEntries,
+  globToRegExp,
+  inspectUnsafePath,
+  parseTarListing,
+  ProvenanceError,
+} from './paths';
 import {
   assertNoGitlink,
   manifestRowsFromIndex,
@@ -47,27 +53,6 @@ const DRIFT_CAP = 200;
 export type ReplayResult = { tree: string; files: number };
 
 type RenameRule = { id: string; kind: string; from?: string; to?: string };
-
-function globToRegExp(glob: string): RegExp {
-  let out = '^';
-  for (let i = 0; i < glob.length; i += 1) {
-    const char = glob[i];
-    if (char === '*') {
-      if (glob[i + 1] === '*') {
-        out += '.*';
-        i += 1;
-        if (glob[i + 1] === '/') i += 1;
-      } else {
-        out += '[^/]*';
-      }
-    } else if (char === '?') {
-      out += '[^/]';
-    } else {
-      out += char.replace(/[.+^${}()|[\]\\]/g, '\\$&');
-    }
-  }
-  return new RegExp(`${out}$`);
-}
 
 function seriesEntries(seriesFile: string): string[] {
   return readFileSync(seriesFile, 'utf8')
@@ -88,6 +73,16 @@ function applyExcludes(work: string, globs: readonly string[]): string[] {
     removed.push(row.path);
   }
   return removed;
+}
+
+/** The file git names in its `error: <path>: ...` line, when it names one. */
+function failingPatchPath(error: unknown): string | null {
+  if (typeof error !== 'object' || error === null || !('stderr' in error)) return null;
+  const stderr = error.stderr;
+  if (typeof stderr !== 'string' && !Buffer.isBuffer(stderr)) return null;
+  const text = typeof stderr === 'string' ? stderr : stderr.toString('utf8');
+  const match = /^error: (?:patch failed: )?(.+?):/m.exec(text);
+  return match === null ? null : match[1];
 }
 
 function describeRow(row: ManifestRow | undefined): string {
@@ -217,13 +212,30 @@ export function replayTree(baseDir: string, tree: string): ReplayResult {
       throw new ProvenanceError(`replay: upstream manifest drift (${tree})`, 1);
     }
 
-    for (const entry of seriesEntries(ledger.series)) {
+    const series = seriesEntries(ledger.series);
+    for (let index = 0; index < series.length; index += 1) {
+      const entry = series[index];
       const patchFile = join(ledger.patchesDir, entry);
       if (!existsSync(patchFile)) {
         throw new ProvenanceError(`series entry missing: ${entry}`, 2);
       }
-      git(['apply', '--check', '--whitespace=nowarn', '-p1', patchFile], work);
-      git(['apply', '--whitespace=nowarn', '-p1', patchFile], work);
+      try {
+        git(['apply', '--check', '--whitespace=nowarn', '-p1', patchFile], work);
+        git(['apply', '--whitespace=nowarn', '-p1', patchFile], work);
+      } catch (error) {
+        // A reordered series is otherwise reported as an opaque git exit; name
+        // the 1-based position and the entry so the operator edits `series`,
+        // not the patch.
+        const failing = failingPatchPath(error);
+        process.stdout.write(
+          `PATCH FAILED index=${index + 1} path=${entry}${failing === null ? '' : ` file=${failing}`}\n`,
+        );
+        throw new ProvenanceError(
+          `replay: patch does not apply (${tree}): index=${index + 1} path=${entry}` +
+            `${failing === null ? '' : ` file=${failing}`}`,
+          1,
+        );
+      }
       git(['add', '-A', '-f', '--', '.'], work);
     }
 
