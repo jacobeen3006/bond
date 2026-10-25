@@ -30,6 +30,7 @@ import {
 import {
   comparePaths,
   hashBlob,
+  hashBlobs,
   hashFile,
   isLedgerPath,
   manifestBodyDigest,
@@ -90,6 +91,20 @@ export type RestageResult = { tree: string; changed: boolean; files: number };
 /** Write `.git/info/attributes` BEFORE the first `git add`. */
 export function writeStagingAttributes(baseDir: string): void {
   const file = join(baseDir, '.git', 'info', 'attributes');
+  ensureDir(path.dirname(file));
+  writeFileSync(file, `${STAGING_ATTRIBUTES_VALUE}\n`, 'utf8');
+}
+
+/**
+ * The same neutral line inside the bare cache before `git archive`.
+ *
+ * `git archive` honors the tree's own `eol` attributes (`*.ps1 text eol=crlf`
+ * in hermes-agent), which would emit CRLF bytes from an LF blob and make every
+ * such path a false attribute mismatch. `$GIT_DIR/info/attributes` has the
+ * highest precedence, so the extracted bytes equal the stored blob bytes.
+ */
+export function writeArchiveAttributes(cache: string): void {
+  const file = join(cache, 'info', 'attributes');
   ensureDir(path.dirname(file));
   writeFileSync(file, `${STAGING_ATTRIBUTES_VALUE}\n`, 'utf8');
 }
@@ -288,37 +303,16 @@ export type AttributeMismatch = {
 
 export type AttributeCheck = { ok: boolean; mismatches: AttributeMismatch[] };
 
-function readIndexOid(treeRoot: string, fullPath: string): string {
-  const raw = git(['ls-files', '-s', '-z', '--', fullPath], treeRoot);
-  for (const record of raw.split('\0')) {
-    if (!record) continue;
-    const tab = record.indexOf('\t');
-    if (tab === -1 || record.slice(tab + 1) !== fullPath) continue;
-    return record.slice(0, tab).trim().split(/\s+/)[1] ?? '';
-  }
-  return '';
-}
-
 /**
- * Attributes that would rewrite bytes. `unset` (`-text`, `-filter`) is the
- * neutral staging state and is not a mismatch; `auto` and any concrete value
- * (`lfs`, `crlf`, an encoding) are.
+ * Attributes that would rewrite bytes, from one path's `check-attr` values.
+ * `unset` (`-text`, `-filter`) is the neutral staging state and is not a
+ * mismatch; `auto` and any concrete value (`lfs`, `crlf`, an encoding) are.
  *
  * `eol` is reported only while `text` is effective: a root `* text=auto eol=lf`
  * reaches every path, but the staging line unsets `text`, and Git ignores
  * `eol` on an unset `text`, so reporting it would be a false positive.
  */
-function readActiveAttributes(treeRoot: string, fullPath: string): string[] {
-  const raw = git(
-    ['check-attr', '-z', 'text', 'eol', 'filter', 'ident', 'working-tree-encoding', '--', fullPath],
-    treeRoot,
-  );
-  const fields = raw.split('\0');
-  const values = new Map<string, string>();
-  for (let i = 0; i + 2 < fields.length; i += 3) {
-    values.set(fields[i + 1], fields[i + 2]);
-  }
-
+function activeAttributesFrom(values: ReadonlyMap<string, string>): string[] {
   const active: string[] = [];
   const text = values.get('text') ?? 'unspecified';
   const textIsEffective = text !== 'unspecified' && text !== 'unset';
@@ -339,6 +333,9 @@ function readActiveAttributes(treeRoot: string, fullPath: string): string[] {
  * OID must be the same value, and no byte-rewriting attribute may be active.
  *
  * `paths` are relative to `scope` when `scope` is given (`vendor/<tree>`).
+ * The three lookups are batched — one `ls-files`, one `hash-object --stdin-paths`
+ * and one `check-attr --stdin` — because a whole-tree import otherwise spawns
+ * three processes per file.
  */
 export function checkAttributes(
   treeRoot: string,
@@ -346,18 +343,53 @@ export function checkAttributes(
   upstreamOids?: ReadonlyMap<string, string>,
   scope?: string,
 ): AttributeCheck {
+  const fullPaths = paths.map((path) => (scope ? `${scope}/${path}` : path));
+  const indexByPath = new Map(readIndexRowsAt(treeRoot).map((row) => [row.path, row.oid]));
+  const present = fullPaths.filter((full) =>
+    existsSync(join(treeRoot, ...full.split('/'))),
+  );
+
+  const rawByPath = new Map<string, string>();
+  if (present.length > 0) {
+    const output = git(
+      ['hash-object', '--no-filters', '--stdin-paths'],
+      treeRoot,
+      `${present.join('\n')}\n`,
+    );
+    const oids = output
+      .split('\n')
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0);
+    present.forEach((full, index) => {
+      const oid = oids[index];
+      if (oid !== undefined) rawByPath.set(full, oid);
+    });
+  }
+
+  const attributesByPath = new Map<string, Map<string, string>>();
+  if (present.length > 0) {
+    const raw = git(
+      ['check-attr', '-z', '--stdin', 'text', 'eol', 'filter', 'ident', 'working-tree-encoding'],
+      treeRoot,
+      present.map((full) => `${full}\0`).join(''),
+    );
+    const fields = raw.split('\0');
+    for (let i = 0; i + 2 < fields.length; i += 3) {
+      const [fullPath, name, value] = [fields[i], fields[i + 1], fields[i + 2]];
+      if (!fullPath) continue;
+      const values = attributesByPath.get(fullPath) ?? new Map<string, string>();
+      values.set(name, value);
+      attributesByPath.set(fullPath, values);
+    }
+  }
+
   const mismatches: AttributeMismatch[] = [];
   for (const path of paths) {
     const fullPath = scope ? `${scope}/${path}` : path;
-    const indexOid = readIndexOid(treeRoot, fullPath);
-    let rawOid = '';
-    try {
-      rawOid = git(['hash-object', '--no-filters', '--', fullPath], treeRoot).trim();
-    } catch {
-      rawOid = '';
-    }
+    const indexOid = indexByPath.get(fullPath) ?? '';
+    const rawOid = rawByPath.get(fullPath) ?? '';
     const upstreamOid = upstreamOids?.get(path) ?? null;
-    const attributes = readActiveAttributes(treeRoot, fullPath);
+    const attributes = activeAttributesFrom(attributesByPath.get(fullPath) ?? new Map());
     const mismatch =
       indexOid.length === 0 ||
       rawOid.length === 0 ||
@@ -501,6 +533,7 @@ export function importFromCache(
 
   const tarPath = join(tmpdir(), `halo-${tree}-${process.pid}-${Date.now()}.tar`);
   try {
+    writeArchiveAttributes(cache);
     git(['archive', '--format=tar', `--output=${tarPath}`, sha], cache);
     const listing = execFileSync('tar', ['-tf', tarPath], {
       encoding: 'utf8',
@@ -517,7 +550,10 @@ export function importFromCache(
     rmSync(tarPath, { force: true });
   }
 
-  git(['add', '-A', ...(options.buildProduct === true ? ['-f'] : []), '--', `vendor/${tree}`], baseDir);
+  // `-f` is mandatory: a vendored tree carries its own `.gitignore`, and an
+  // upstream-tracked file that upstream happens to ignore must still be staged.
+  // Without it the index silently omits those paths and the manifest lies.
+  git(['add', '-A', '-f', '--', `vendor/${tree}`], baseDir);
   repairModesAt(
     baseDir,
     treeRows,
@@ -549,10 +585,14 @@ export function importFromCache(
 
   ensureDir(ledger.dir);
 
+  const blobDigests = hashBlobs(
+    treeRows.map((row) => row.oid),
+    cache,
+  );
   const upstreamRows: ManifestRow[] = treeRows.map((row) => ({
     mode: row.mode,
     oid: row.oid,
-    sha256: hashBlob(row.oid, cache),
+    sha256: blobDigests.get(row.oid) as string,
     path: row.path,
   }));
   const upstreamText = renderManifest(upstreamRows);
@@ -648,7 +688,7 @@ export function restage(baseDir: string, tree: string): RestageResult {
   const ledger = ledgerPaths(baseDir, tree);
   const document = readUpstreamLedger(baseDir, tree);
 
-  git(['add', '-A', '--', `vendor/${tree}`], baseDir);
+  git(['add', '-A', '-f', '--', `vendor/${tree}`], baseDir);
   const vendoredRows = vendoredManifestRows(baseDir, tree);
   const text = renderManifest(vendoredRows);
 

@@ -27,6 +27,37 @@
         "github-advisory"
       ],
       "last_checked": "2026-10-25"
+    },
+    {
+      "id": "WL-HERMES-PLUGIN-LOADER",
+      "subtree": "hermes-agent",
+      "upstream_paths": [
+        "hermes_cli/plugins.py",
+        "hermes_cli/plugins_dispatch.py",
+        "hermes_cli/plugin_isolation.py",
+        "agent/tool_executor.py"
+      ],
+      "local_paths": [
+        "vendor/hermes-agent/hermes_cli/plugins.py",
+        "vendor/hermes-agent/hermes_cli/plugins_dispatch.py",
+        "vendor/hermes-agent/hermes_cli/plugin_isolation.py",
+        "vendor/hermes-agent/agent/tool_executor.py"
+      ],
+      "symbols": [
+        "plugins.enabled",
+        "pre_tool_call",
+        "PluginManager",
+        "isolation_mode"
+      ],
+      "why": "plugin loading is a policy-bypass surface (PITFALLS P-07); HALO's gate must stay the only execution path",
+      "contract_tests": [
+        "tests/provenance/cve-drill.test.ts"
+      ],
+      "advisory_sources": [
+        "osv-commit",
+        "github-advisory"
+      ],
+      "last_checked": "2026-10-25"
     }
   ]
 }

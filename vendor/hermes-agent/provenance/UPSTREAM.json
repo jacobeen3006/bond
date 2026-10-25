@@ -1,0 +1,82 @@
+{
+  "schema": "halo/upstream/v1",
+  "subtree": "hermes-agent",
+  "local_root": "vendor/hermes-agent",
+  "repo": "https://github.com/NousResearch/hermes-agent.git",
+  "commit": "930e5ed557edb25b4b0b8ca3f51679dde3c92eb6",
+  "commit_committed_at": "2026-10-25T09:39:38-04:00",
+  "default_branch": "main",
+  "tag": null,
+  "object_format": "sha1",
+  "import": {
+    "mode": "archive",
+    "date": "2026-10-25",
+    "tool": "halo-provenance/0.1.0",
+    "git_version": "2.55.0.windows.3",
+    "lfs_version": "3.7.1",
+    "staging_attributes": ".git/info/attributes",
+    "staging_attributes_value": "* -text -filter -ident -working-tree-encoding"
+  },
+  "license": {
+    "spdx": "MIT",
+    "files": [
+      {
+        "path": "LICENSE",
+        "blob": "75410e73319c72cd3e991a501c5455eb78f38375",
+        "sha256": "821556e6336796450ab852d375117b48a4887e71d255794fd6318d99982a5ab6"
+      }
+    ],
+    "copyright_notice_count": 3
+  },
+  "lockfiles": [
+    {
+      "path": "flake.lock",
+      "sha256": "1b60cfdf1d0334b293aa5d2a9e38a756476358c6eac66f78bddd9dea36be0a63"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "ba681cd436db12d02a82f80c19de02d94e9cd7ca7c1672c4589b37e0ece522c7"
+    },
+    {
+      "path": "plugins/platforms/photon/sidecar/package-lock.json",
+      "sha256": "47a1472cd4cd8a1eb217c43db36ed62c6a5592acd21893f19a1939891b369c82"
+    },
+    {
+      "path": "pm/uv.lock",
+      "sha256": "7cd886aebd40548efa8285f88e97394b74afca9df94cda6f12513219c8d6d03c"
+    },
+    {
+      "path": "scripts/whatsapp-bridge/package-lock.json",
+      "sha256": "2cb2b4bb194763d1a5af04e635c45346434b62cbd859f8c8eba561ff1eb1056d"
+    },
+    {
+      "path": "uv.lock",
+      "sha256": "f4f18ee9f6ffea44a40c1c262868265f2f6b7eb505ca8ebe037085fa40c09222"
+    },
+    {
+      "path": "website/package-lock.json",
+      "sha256": "422fefd0ab34865b107460556e498e31fe5238cc9aa26eb3f92a4906a3439235"
+    }
+  ],
+  "counts": {
+    "files": 21220,
+    "bytes": 234700460,
+    "lfs_files": 0,
+    "symlinks": 0,
+    "executables": 107
+  },
+  "manifests": {
+    "upstream": "provenance/MANIFEST.upstream.tsv",
+    "upstream_sha256": "04e1cbb6907b54bd7c1e5030f322c80c89abd961e4ac6c4820ce8781ad3cbeed",
+    "vendored": "provenance/MANIFEST.vendored.tsv",
+    "vendored_sha256": "04e1cbb6907b54bd7c1e5030f322c80c89abd961e4ac6c4820ce8781ad3cbeed"
+  },
+  "excludes_sha256": "9d89f7054de8f2b4478bb5e131be85270e6a8be2900791b18f6c9c085a0bbbc3",
+  "renames_sha256": "10a94a9b6c932760c3497e836256bd244f888f7d899e2e52e8bacb361a33b402",
+  "notes": {
+    "requires-python": ">=3.11,<3.15",
+    "package-manager": "nix + npm + uv",
+    "lockfile": "flake.lock, package-lock.json, uv.lock",
+    "workspace-root": "uv project at repo root (no workspace); npm workspaces at repo root (apps/*, ui-tui, ui-tui/packages/*, web, tests-js)"
+  }
+}

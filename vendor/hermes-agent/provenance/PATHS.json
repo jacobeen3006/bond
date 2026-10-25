@@ -1,0 +1,194 @@
+{
+  "schema": "halo/paths/v1",
+  "subtree": "hermes-agent",
+  "resolution": "exceptions first, then longest-prefix-first, then file rules, then identity (a path matched by both a prefix rule and a file exception resolves by the exception)",
+  "rules": [
+    {
+      "kind": "prefix",
+      "from": ".github/",
+      "to": ".github/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "acp_adapter/",
+      "to": "acp_adapter/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "agent/",
+      "to": "agent/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "apps/",
+      "to": "apps/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "assets/",
+      "to": "assets/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "contributors/",
+      "to": "contributors/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "cron/",
+      "to": "cron/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "docker/",
+      "to": "docker/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "evals/",
+      "to": "evals/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "gateway/",
+      "to": "gateway/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "hermes_cli/",
+      "to": "hermes_cli/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "hermes_platform/",
+      "to": "hermes_platform/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "locales/",
+      "to": "locales/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "native/",
+      "to": "native/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "nix/",
+      "to": "nix/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "optional-mcps/",
+      "to": "optional-mcps/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "optional-skills/",
+      "to": "optional-skills/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "plugin-catalog/",
+      "to": "plugin-catalog/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "plugins/",
+      "to": "plugins/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "pm/",
+      "to": "pm/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "providers/",
+      "to": "providers/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "scripts/",
+      "to": "scripts/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "skills/",
+      "to": "skills/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "tests/",
+      "to": "tests/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "tests-js/",
+      "to": "tests-js/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "tools/",
+      "to": "tools/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "tui_gateway/",
+      "to": "tui_gateway/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "ui-tui/",
+      "to": "ui-tui/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "web/",
+      "to": "web/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "website/",
+      "to": "website/",
+      "reason": "verbatim subtree"
+    }
+  ],
+  "exceptions": [],
+  "added": [
+    {
+      "to": "provenance/",
+      "reason": "HALO provenance record (not upstream)"
+    }
+  ]
+}

@@ -38,6 +38,7 @@ import {
   repairModesAt,
   STAGING_ATTRIBUTES_VALUE,
   TAR_UTF8_OPTIONS,
+  writeArchiveAttributes,
 } from './stage';
 
 const MAX_BUFFER = 512 * 1024 * 1024;
@@ -180,6 +181,7 @@ export function replayTree(baseDir: string, tree: string): ReplayResult {
   try {
     mkdirSync(work);
     const tarPath = join(scratchRoot, 'archive.tar');
+    writeArchiveAttributes(cache);
     git(['archive', '--format=tar', `--output=${tarPath}`, document.commit], cache);
     const listing = execFileSync('tar', ['-tf', tarPath], {
       encoding: 'utf8',
@@ -194,7 +196,7 @@ export function replayTree(baseDir: string, tree: string): ReplayResult {
     const treeRows = readTreeRows(cache, document.commit, false);
     git(['init', '-q', '.'], work);
     writeFileSync(join(work, '.git', 'info', 'attributes'), `${STAGING_ATTRIBUTES_VALUE}\n`, 'utf8');
-    git(['add', '-A', '--', '.'], work);
+    git(['add', '-A', '-f', '--', '.'], work);
     repairModesAt(work, treeRows, (oid) =>
       execFileSync('git', ['cat-file', 'blob', oid], { cwd: cache, maxBuffer: MAX_BUFFER }),
     );
@@ -222,7 +224,7 @@ export function replayTree(baseDir: string, tree: string): ReplayResult {
       }
       git(['apply', '--check', '--whitespace=nowarn', '-p1', patchFile], work);
       git(['apply', '--whitespace=nowarn', '-p1', patchFile], work);
-      git(['add', '-A', '--', '.'], work);
+      git(['add', '-A', '-f', '--', '.'], work);
     }
 
     const pathRules = ((renames.rules ?? []) as RenameRule[])
@@ -242,7 +244,7 @@ export function replayTree(baseDir: string, tree: string): ReplayResult {
       if (!existsSync(join(work, ...(rule.to as string).split('/')))) {
         throw new ProvenanceError(`RENAME-TARGET ${rule.id}`, 1);
       }
-      git(['add', '-A', '--', '.'], work);
+      git(['add', '-A', '-f', '--', '.'], work);
     }
 
     const reconstructedVendored = sortedRows(

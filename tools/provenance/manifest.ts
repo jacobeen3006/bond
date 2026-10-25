@@ -64,6 +64,44 @@ export function hashBlob(oid: string, cwd?: string): string {
   return hashBytes(bytes);
 }
 
+/**
+ * SHA-256 of many blobs through one `git cat-file --batch` process per chunk.
+ *
+ * A 20k-file tree costs 20k process spawns through `hashBlob`, which dominates
+ * an import on Windows; the batch output is parsed by byte offset because blob
+ * contents may contain newlines.
+ */
+export function hashBlobs(oids: readonly string[], cwd?: string): Map<string, string> {
+  for (const oid of oids) {
+    if (!/^[0-9a-f]{40}$/.test(oid)) throw new ManifestError('invalid-oid', oid);
+  }
+  const result = new Map<string, string>();
+  const CHUNK = 256;
+  for (let start = 0; start < oids.length; start += CHUNK) {
+    const batch = oids.slice(start, start + CHUNK);
+    const output = execFileSync('git', ['cat-file', '--batch'], {
+      cwd,
+      input: `${batch.join('\n')}\n`,
+      maxBuffer: 512 * 1024 * 1024,
+    });
+    let pos = 0;
+    while (pos < output.length) {
+      const headerEnd = output.indexOf(0x0a, pos);
+      if (headerEnd === -1) throw new ManifestError('batch-header', `offset ${pos}`);
+      const header = output.subarray(pos, headerEnd).toString('utf8').trim().split(' ');
+      const [oid, type, size] = header;
+      if (type !== 'blob' || size === undefined) {
+        throw new ManifestError('batch-missing', `${oid} (${header.slice(1).join(' ')})`);
+      }
+      const bodyStart = headerEnd + 1;
+      const length = Number(size);
+      result.set(oid, hashBytes(output.subarray(bodyStart, bodyStart + length)));
+      pos = bodyStart + length + 1;
+    }
+  }
+  return result;
+}
+
 function normalizeMode(mode: string | number): string {
   const text = typeof mode === 'number' ? mode.toString(8) : String(mode);
   if (!/^[0-7]{6}$/.test(text)) {
