@@ -270,7 +270,10 @@ Plans:
 **Plans**: 5 plans
 
 Plans:
+**Wave 1**
 - [ ] 08-01-PLAN.md — End-to-end memory service boot tracer (PG cluster + pgvector gate + embedder + embedded Hindsight + one retain landing a vector row)
+
+**Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 08-02-PLAN.md — pgvector CI build (build-pgvector.ps1 + build-pgvector.yml, pg_regress gate, SHA-256 manifest) + version-gate test (mismatch fails startup with actionable message)
 - [ ] 08-03-PLAN.md — Sidecar supervision: reranker + restart/backoff + hardware-profile flags on ephemeral ports
 - [ ] 08-04-PLAN.md — Hindsight embedded-shape + per-op env + recorded degraded decision (MEM-04) + retain idempotency via operation_id + recover_own_tasks repair (MEM-06)
