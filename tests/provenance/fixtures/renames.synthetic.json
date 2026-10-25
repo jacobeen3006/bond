@@ -1,0 +1,72 @@
+{
+  "schema": "halo/renames/v1",
+  "subtree": "synthetic",
+  "generated_from": "fixture",
+  "phase_populated": 2,
+  "rules": [
+    {
+      "id": "R-SYN-0001",
+      "kind": "identifier",
+      "from": "RpcCommand",
+      "to": "HaloCommand",
+      "scope": "packages/coding-agent/src/modes/rpc/",
+      "applied_by": "plan 01-07 fixture (test-only)"
+    },
+    {
+      "id": "R-SYN-0002",
+      "kind": "string",
+      "from": "oh-my-pi",
+      "to": "halo",
+      "scope": "**/*.md",
+      "applied_by": "plan 01-07 fixture (test-only)"
+    },
+    {
+      "id": "R-SYN-0003",
+      "kind": "path",
+      "from": "packages/ompi",
+      "to": "packages/halo-core",
+      "scope": "**",
+      "applied_by": "plan 01-07 fixture (test-only)"
+    },
+    {
+      "id": "R-SYN-0004",
+      "kind": "env",
+      "from": "PI_NO_TITLE",
+      "to": "HALO_NO_TITLE",
+      "scope": "**",
+      "applied_by": "plan 01-07 fixture (test-only)"
+    },
+    {
+      "id": "R-SYN-0005",
+      "kind": "pkg",
+      "from": "@oh-my-pi/pi-utils",
+      "to": "@halo/utils",
+      "scope": "**/package.json",
+      "applied_by": "plan 01-07 fixture (test-only)"
+    },
+    {
+      "id": "R-SYN-0006",
+      "kind": "schema",
+      "from": "omp_sessions",
+      "to": "halo_sessions",
+      "scope": "**/*.sql",
+      "applied_by": "plan 01-07 fixture (test-only)"
+    },
+    {
+      "id": "R-SYN-0007",
+      "kind": "string",
+      "from": "PI_TITLE",
+      "to": "HALO_TITLE",
+      "scope": "**",
+      "applied_by": "plan 01-07 fixture (test-only)"
+    },
+    {
+      "id": "R-SYN-0008",
+      "kind": "identifier",
+      "from": "pi_title",
+      "to": "HALO_TITLE",
+      "scope": "**",
+      "applied_by": "plan 01-07 fixture (test-only)"
+    }
+  ]
+}

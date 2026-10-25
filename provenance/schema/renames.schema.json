@@ -9,7 +9,10 @@
   "properties": {
     "schema": { "const": "halo/renames/v1" },
     "subtree": { "type": "string", "minLength": 1, "pattern": "^[a-z0-9][a-z0-9-]*$" },
-    "generated_from": { "const": "brand.json" },
+    "generated_from": {
+      "enum": ["brand.json", "fixture"],
+      "description": "brand.json for every real ledger; fixture is test-only and may never name a vendored subtree."
+    },
     "phase_populated": {
       "type": "integer",
       "minimum": 1,
