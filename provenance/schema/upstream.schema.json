@@ -132,6 +132,11 @@
       "type": "string",
       "pattern": "^[0-9a-f]{64}$",
       "description": "SHA-256 of the RENAMES.json document bytes."
+    },
+    "notes": {
+      "type": "object",
+      "description": "Build facts the imported tree declares about itself (Python constraint, package manager, workspace root, root lockfiles). Recorded here rather than re-hosted at the HALO root (DEC-04). Optional so earlier ledgers stay valid.",
+      "additionalProperties": { "type": "string", "minLength": 1 }
     }
   }
 }

@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://halo.local/provenance/paths.schema.json",
+  "title": "HALO upstream-to-local path map",
+  "description": "The lookup index every consumer resolves a path through. Resolution order is exceptions, then the longest matching prefix rule, then an exact file rule, then identity.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "subtree", "resolution", "rules", "exceptions", "added"],
+  "properties": {
+    "schema": { "const": "halo/paths/v1" },
+    "subtree": { "type": "string", "minLength": 1, "pattern": "^[a-z0-9][a-z0-9-]*$" },
+    "resolution": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The one resolution order, stated in the document so no consumer has to guess it."
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "from", "to", "reason"],
+        "properties": {
+          "kind": { "type": "string", "enum": ["prefix", "file"] },
+          "from": { "type": "string", "minLength": 1 },
+          "to": { "type": "string", "minLength": 1 },
+          "reason": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "exceptions": {
+      "type": "array",
+      "description": "One entry per path the rules would resolve wrongly. A null `to` means the path is deliberately absent.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["from", "to", "reason"],
+        "properties": {
+          "from": { "type": "string", "minLength": 1 },
+          "to": { "type": ["string", "null"] },
+          "reason": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "added": {
+      "type": "array",
+      "description": "Paths HALO adds that upstream never carries. Replay must never expect them upstream.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["to", "reason"],
+        "properties": {
+          "to": { "type": "string", "minLength": 1 },
+          "reason": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}

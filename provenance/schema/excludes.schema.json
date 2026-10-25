@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://halo.local/provenance/excludes.schema.json",
+  "title": "HALO vendored-tree exclusion ledger",
+  "description": "Every upstream path HALO deliberately does not vendor. All three fields are required, so an unexplained exclusion is invalid by construction rather than at runtime.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "subtree", "rules"],
+  "properties": {
+    "schema": { "const": "halo/excludes/v1" },
+    "subtree": { "type": "string", "minLength": 1, "pattern": "^[a-z0-9][a-z0-9-]*$" },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["glob", "reason", "approved_by"],
+        "properties": {
+          "glob": { "type": "string", "minLength": 1 },
+          "reason": { "type": "string", "minLength": 1 },
+          "approved_by": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}

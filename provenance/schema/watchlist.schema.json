@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://halo.local/provenance/watchlist.schema.json",
+  "title": "HALO upstream advisory watchlist",
+  "description": "The surfaces a maintainer must check when an upstream advisory lands. All nine fields are required, so a short entry is a schema failure rather than a runtime undefined.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "entries"],
+  "properties": {
+    "schema": { "const": "halo/watchlist/v1" },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "subtree",
+          "upstream_paths",
+          "local_paths",
+          "symbols",
+          "why",
+          "contract_tests",
+          "advisory_sources",
+          "last_checked"
+        ],
+        "properties": {
+          "id": { "type": "string", "pattern": "^WL-[A-Z0-9]+-[A-Z0-9-]+$" },
+          "subtree": { "type": "string", "minLength": 1, "pattern": "^[a-z0-9][a-z0-9-]*$" },
+          "upstream_paths": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "local_paths": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "symbols": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "why": { "type": "string", "minLength": 1 },
+          "contract_tests": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "advisory_sources": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "last_checked": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" }
+        }
+      }
+    }
+  }
+}

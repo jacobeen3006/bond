@@ -89,6 +89,12 @@ export type UpstreamLedger = {
   };
   excludes_sha256: string;
   renames_sha256: string;
+  /**
+   * Facts the tree declares about its own build, recorded here instead of
+   * re-hosted at the HALO root (DEC-04). Optional so ledgers written before
+   * this field existed stay valid.
+   */
+  notes?: Record<string, string>;
 };
 
 export const PATHS_RESOLUTION =
@@ -216,6 +222,122 @@ export function listLedgerTrees(baseDir: string): string[] {
     .map((entry) => entry.name)
     .filter((tree) => existsSync(join(vendorDir, tree, 'provenance', 'UPSTREAM.json')))
     .sort(comparePaths);
+}
+
+/** `Bun.TOML` is the runtime's own parser; the cast names the one global we read. */
+const bunGlobal = globalThis as { Bun?: { TOML?: { parse(text: string): unknown } } };
+
+/** Lockfile basenames the ledger recognises, paired with the manager that owns them. */
+const MANAGER_BY_LOCKFILE: readonly (readonly [string, string])[] = [
+  ['Cargo.lock', 'cargo'],
+  ['MODULE.bazel.lock', 'bazel'],
+  ['bun.lock', 'bun'],
+  ['bun.lockb', 'bun'],
+  ['deno.lock', 'deno'],
+  ['flake.lock', 'nix'],
+  ['package-lock.json', 'npm'],
+  ['pnpm-lock.yaml', 'pnpm'],
+  ['poetry.lock', 'poetry'],
+  ['uv.lock', 'uv'],
+  ['yarn.lock', 'yarn'],
+];
+
+const LOCKFILE_BASENAMES: ReadonlySet<string> = new Set(
+  MANAGER_BY_LOCKFILE.map(([file]) => file),
+);
+
+function asRecord(value: unknown): Record<string, unknown> | null {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : null;
+}
+
+function asStringArray(value: unknown): string[] {
+  return Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : [];
+}
+
+function readToml(file: string): Record<string, unknown> | null {
+  const parser = bunGlobal.Bun?.TOML;
+  if (parser === undefined || !existsSync(file)) return null;
+  try {
+    return asRecord(parser.parse(readFileSync(file, 'utf8')));
+  } catch {
+    return null;
+  }
+}
+
+function readJsonObject(file: string): Record<string, unknown> | null {
+  if (!existsSync(file)) return null;
+  try {
+    return asRecord(JSON.parse(readFileSync(file, 'utf8')));
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * The tree's own build facts: its Python constraint (root, or the members when
+ * the root declares none), its package managers, its root lockfiles and where
+ * its workspace root is. Every value is read from the imported tree, so an
+ * absent declaration is recorded as absent rather than invented.
+ */
+export function deriveTreeNotes(root: string): Record<string, string> {
+  const notes: Record<string, string> = {};
+  const pyproject = readToml(join(root, 'pyproject.toml'));
+  const pkg = readJsonObject(join(root, 'package.json'));
+
+  const project = asRecord(pyproject?.project);
+  const uv = asRecord(asRecord(pyproject?.tool)?.uv);
+  const uvWorkspace = asRecord(uv?.workspace);
+  const members = asStringArray(uvWorkspace?.members).sort(comparePaths);
+
+  const requiresPython = project?.['requires-python'];
+  if (pyproject !== null) {
+    if (typeof requiresPython === 'string') {
+      notes['requires-python'] = requiresPython;
+    } else {
+      notes['requires-python'] = 'none (root)';
+      const declared: string[] = [];
+      for (const member of members) {
+        const memberProject = asRecord(
+          readToml(join(root, ...member.split('/'), 'pyproject.toml'))?.project,
+        );
+        const value = memberProject?.['requires-python'];
+        if (typeof value === 'string') declared.push(`${member}=${value}`);
+      }
+      if (declared.length > 0) notes['requires-python-members'] = declared.join('; ');
+    }
+  }
+
+  const rootNames = existsSync(root)
+    ? readdirSync(root, { withFileTypes: true })
+        .filter((entry) => entry.isFile())
+        .map((entry) => entry.name)
+        .filter((name) => LOCKFILE_BASENAMES.has(name))
+        .sort(comparePaths)
+    : [];
+
+  const managers = new Set<string>();
+  for (const [file, manager] of MANAGER_BY_LOCKFILE) {
+    if (rootNames.includes(file)) managers.add(manager);
+  }
+  if (uv !== null) managers.add('uv');
+  if (managers.size > 0) notes['package-manager'] = [...managers].sort(comparePaths).join(' + ');
+  if (rootNames.length > 0) notes.lockfile = rootNames.join(', ');
+
+  const workspace: string[] = [];
+  if (uvWorkspace !== null) {
+    workspace.push(`uv workspace at repo root (members: ${members.join(', ')})`);
+  } else if (uv !== null) {
+    workspace.push('uv project at repo root (no workspace)');
+  }
+  const npmWorkspaces = asStringArray(pkg?.workspaces);
+  if (npmWorkspaces.length > 0) {
+    workspace.push(`npm workspaces at repo root (${npmWorkspaces.join(', ')})`);
+  }
+  notes['workspace-root'] = workspace.length > 0 ? workspace.join('; ') : 'none';
+
+  return notes;
 }
 
 /** POSIX-separated repository-relative path, for diagnostics. */

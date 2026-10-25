@@ -18,6 +18,7 @@ import {
   deriveExcludes,
   derivePaths,
   deriveRenames,
+  deriveTreeNotes,
   ensureDir,
   ledgerPaths,
   readUpstreamLedger,
@@ -623,6 +624,7 @@ export function importFromCache(
     },
     excludes_sha256: hashFile(ledger.excludes),
     renames_sha256: hashFile(ledger.renames),
+    notes: deriveTreeNotes(targetRoot),
   };
   writeUpstreamLedger(baseDir, tree, document);
 

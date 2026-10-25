@@ -1,0 +1,32 @@
+{
+  "schema": "halo/watchlist/v1",
+  "entries": [
+    {
+      "id": "WL-GSD-EXTENSION-API",
+      "subtree": "gsd-omp",
+      "upstream_paths": [
+        "package.json",
+        "src/extension.cjs",
+        "src/projection.cjs"
+      ],
+      "local_paths": [
+        "vendor/gsd-omp/package.json",
+        "vendor/gsd-omp/src/extension.cjs",
+        "vendor/gsd-omp/src/projection.cjs"
+      ],
+      "symbols": [
+        "@opengsd/gsd-core",
+        "ExtensionAPI"
+      ],
+      "why": "HALO installs GSD skills through this package's extension surface (EXT-01/EXT-04); an API break here silently disables skill loading",
+      "contract_tests": [
+        "tests/provenance/cve-drill.test.ts"
+      ],
+      "advisory_sources": [
+        "osv-commit",
+        "github-advisory"
+      ],
+      "last_checked": "2026-10-25"
+    }
+  ]
+}

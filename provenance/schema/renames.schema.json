@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://halo.local/provenance/renames.schema.json",
+  "title": "HALO rebrand rename ledger",
+  "description": "Every identifier, string, path, environment variable, package and schema rename HALO applies to a vendored tree. Generated from brand.json; replay applies the path rules in id order.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "subtree", "generated_from", "phase_populated", "rules"],
+  "properties": {
+    "schema": { "const": "halo/renames/v1" },
+    "subtree": { "type": "string", "minLength": 1, "pattern": "^[a-z0-9][a-z0-9-]*$" },
+    "generated_from": { "const": "brand.json" },
+    "phase_populated": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "The phase whose edits populated these rules; the ledger is written empty until that phase."
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "kind", "from", "to", "scope", "applied_by"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^R-[A-Z0-9]+-[0-9]{4}$" },
+          "kind": {
+            "type": "string",
+            "enum": ["identifier", "string", "path", "env", "pkg", "schema"]
+          },
+          "from": { "type": "string", "minLength": 1 },
+          "to": { "type": "string", "minLength": 1 },
+          "scope": { "type": "string", "minLength": 1 },
+          "applied_by": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}
