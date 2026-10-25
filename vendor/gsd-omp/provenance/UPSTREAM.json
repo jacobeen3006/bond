@@ -1,0 +1,52 @@
+{
+  "schema": "halo/upstream/v1",
+  "subtree": "gsd-omp",
+  "local_root": "vendor/gsd-omp",
+  "repo": "https://github.com/tchivs/gsd-omp.git",
+  "commit": "7df847d2224b90f4b601f97152e6e6e8975fc2d0",
+  "commit_committed_at": "2026-09-30T07:35:57Z",
+  "default_branch": "main",
+  "tag": null,
+  "object_format": "sha1",
+  "import": {
+    "mode": "archive",
+    "date": "2026-10-25",
+    "tool": "halo-provenance/0.1.0",
+    "git_version": "2.55.0.windows.3",
+    "lfs_version": "3.7.1",
+    "staging_attributes": ".git/info/attributes",
+    "staging_attributes_value": "* -text -filter -ident -working-tree-encoding"
+  },
+  "license": {
+    "spdx": "MIT",
+    "files": [
+      {
+        "path": "LICENSE",
+        "blob": "71860e08e74b06654c643b076b1c960ae7428b67",
+        "sha256": "b963b117f0bee3c81d10944f519c2a24d1c334a8a054849ff288743ba2336be1"
+      }
+    ],
+    "copyright_notice_count": 4
+  },
+  "lockfiles": [
+    {
+      "path": "package-lock.json",
+      "sha256": "e68d83294f01718a5c02716b02359737395f947f1de8b41caf67fbd21dcb45f8"
+    }
+  ],
+  "counts": {
+    "files": 34,
+    "bytes": 549027,
+    "lfs_files": 0,
+    "symlinks": 0,
+    "executables": 1
+  },
+  "manifests": {
+    "upstream": "provenance/MANIFEST.upstream.tsv",
+    "upstream_sha256": "bad20806706c3a812ade279e6a3a1bbce48cb93c94dda3653a86a094343957b9",
+    "vendored": "provenance/MANIFEST.vendored.tsv",
+    "vendored_sha256": "bad20806706c3a812ade279e6a3a1bbce48cb93c94dda3653a86a094343957b9"
+  },
+  "excludes_sha256": "73dcc4885b610eab6bc272b8e5a864d6430412b354473dd7da8e872dcb0b47b6",
+  "renames_sha256": "1b7ff867e14af21b3e05b8bfc83016b5d328ff190a1f6a2d950353e6e5bebfb7"
+}

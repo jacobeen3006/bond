@@ -1,0 +1,8 @@
+upstream-cache/
+node_modules/
+target/
+.venv/
+dist/
+build/
+__pycache__/
+*.pyc

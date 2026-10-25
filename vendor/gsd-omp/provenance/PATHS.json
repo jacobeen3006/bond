@@ -1,0 +1,50 @@
+{
+  "schema": "halo/paths/v1",
+  "subtree": "gsd-omp",
+  "resolution": "exceptions first, then longest-prefix-first, then file rules, then identity (a path matched by both a prefix rule and a file exception resolves by the exception)",
+  "rules": [
+    {
+      "kind": "prefix",
+      "from": ".github/",
+      "to": ".github/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "bin/",
+      "to": "bin/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "docs/",
+      "to": "docs/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "scripts/",
+      "to": "scripts/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "src/",
+      "to": "src/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "test/",
+      "to": "test/",
+      "reason": "verbatim subtree"
+    }
+  ],
+  "exceptions": [],
+  "added": [
+    {
+      "to": "provenance/",
+      "reason": "HALO provenance record (not upstream)"
+    }
+  ]
+}
