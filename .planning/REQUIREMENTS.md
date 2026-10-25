@@ -7,12 +7,12 @@
 
 ### Import & Provenance (IMPT)
 
-- [ ] **IMPT-01**: Every vendored subtree carries an `UPSTREAM.json` recording repo URL, commit SHA, import date, and license
-- [ ] **IMPT-02**: Each vendored subtree retains its upstream LICENSE text and copyright notices verbatim after rebranding
-- [ ] **IMPT-03**: A `provenance-replay` CI job reproduces each imported tree from its recorded SHA and fails on drift
+- [x] **IMPT-01**: Every vendored subtree carries an `UPSTREAM.json` recording repo URL, commit SHA, import date, and license
+- [x] **IMPT-02**: Each vendored subtree retains its upstream LICENSE text and copyright notices verbatim after rebranding
+- [x] **IMPT-03**: A `provenance-replay` CI job reproduces each imported tree from its recorded SHA and fails on drift
 - [ ] **IMPT-04**: `THIRD_PARTY_NOTICES` lists every vendored subtree and ships in both the installer and the About surface
-- [ ] **IMPT-05**: A watchlist maps each vendored subsystem to its upstream location, so an upstream security fix can be located and back-ported by hand
-- [ ] **IMPT-06**: Import fidelity checks cover `.gitattributes` line endings, LFS-tracked binaries, and lockfile bytes
+- [x] **IMPT-05**: A watchlist maps each vendored subsystem to its upstream location, so an upstream security fix can be located and back-ported by hand
+- [x] **IMPT-06**: Import fidelity checks cover `.gitattributes` line endings, LFS-tracked binaries, and lockfile bytes
 
 ### Rebrand & Migration (BRND)
 
@@ -158,12 +158,12 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| IMPT-01 | Phase 1 | Pending |
-| IMPT-02 | Phase 1 | Pending |
-| IMPT-03 | Phase 1 | Pending |
+| IMPT-01 | Phase 1 | Complete |
+| IMPT-02 | Phase 1 | Complete |
+| IMPT-03 | Phase 1 | Complete |
 | IMPT-04 | Phase 12 | Pending |
-| IMPT-05 | Phase 1 | Pending |
-| IMPT-06 | Phase 1 | Pending |
+| IMPT-05 | Phase 1 | Complete |
+| IMPT-06 | Phase 1 | Complete |
 | BRND-01 | Phase 2 | Pending |
 | BRND-02 | Phase 2 | Pending |
 | BRND-03 | Phase 2 | Pending |

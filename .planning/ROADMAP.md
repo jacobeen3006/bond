@@ -19,7 +19,7 @@ HALO is assembled, not written from scratch: four MIT codebases are imported onc
 - Integer phases (1, 2, 3): planned milestone work
 - Decimal phases (2.1, 2.2): urgent insertions (marked with INSERTED)
 
-- [ ] **Phase 1: Import & Provenance Ledger** - Four squashed imports with replayable provenance, verbatim licenses and import-fidelity checks
+- [x] **Phase 1: Import & Provenance Ledger** - Four squashed imports with replayable provenance, verbatim licenses and import-fidelity checks (completed 2026-10-25)
 - [ ] **Phase 2: Rebrand, Wire Contract & Migration** - One generated brand vocabulary across every identifier, including the full RPC wire, frozen before contracts
 - [ ] **Phase 3: Unified Loop & Session Authority** - One loop owns every turn; one SQLite store is the only transcript
 - [ ] **Phase 4: Tool Registry & Policy Gate** - One registry, one pure gate, deny by default, before any coding tool exists
@@ -47,31 +47,31 @@ HALO is assembled, not written from scratch: four MIT codebases are imported onc
   4. A synthetic upstream security fix can be triaged through the watchlist, path map and rename map and landed as a patch without searching the trees by hand (IMPT-05).
   5. Import-fidelity checks prove line endings, LFS-tracked binaries and lockfile bytes match upstream blob-for-blob (IMPT-06).
 
-**Plans:** 9 plans
+**Plans:** 9/9 plans complete
 
 Plans:
 **Wave 1**
-- [ ] 01-01-PLAN.md — Walking skeleton: import `gsd-omp` at a pinned SHA, write the ledger, replay it byte-for-byte through one command
+- [x] 01-01-PLAN.md — Walking skeleton: import `gsd-omp` at a pinned SHA, write the ledger, replay it byte-for-byte through one command
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 01-02-PLAN.md — Hermetic fixture plus hostile-path and attribute-fidelity gates that refuse bad input before writing
+- [x] 01-02-PLAN.md — Hermetic fixture plus hostile-path and attribute-fidelity gates that refuse bad input before writing
 
 **Wave 3** *(blocked on Wave 2 completion)*
-- [ ] 01-03-PLAN.md — Complete the `gsd-omp` ledger; import `hermes-agent` and `hindsight`; schemas and watch entries
+- [x] 01-03-PLAN.md — Complete the `gsd-omp` ledger; import `hermes-agent` and `hindsight`; schemas and watch entries
 
 **Wave 4** *(blocked on Wave 3 completion)*
-- [ ] 01-04-PLAN.md — Import `oh-my-pi` with LFS pointers intact and its three workspace roots recorded, not absorbed
+- [x] 01-04-PLAN.md — Import `oh-my-pi` with LFS pointers intact and its three workspace roots recorded, not absorbed
 
 **Wave 5** *(blocked on Wave 4 completion)*
-- [ ] 01-05-PLAN.md — Pin every licence-ish path by raw bytes and ship the rebrand deny-list contract with a sensitivity-proving test
-- [ ] 01-07-PLAN.md — `provenance-where`, reverse rename lookup, and the permanent synthetic-CVE triage drill plus runbook
-- [ ] 01-08-PLAN.md — Offline `provenance-verify`, unrecorded-edit detector, five named replay drift classes, pre-commit gate
+- [x] 01-05-PLAN.md — Pin every licence-ish path by raw bytes and ship the rebrand deny-list contract with a sensitivity-proving test
+- [x] 01-07-PLAN.md — `provenance-where`, reverse rename lookup, and the permanent synthetic-CVE triage drill plus runbook
+- [x] 01-08-PLAN.md — Offline `provenance-verify`, unrecorded-edit detector, five named replay drift classes, pre-commit gate
 
 **Wave 6** *(blocked on Wave 5 completion)*
-- [ ] 01-06-PLAN.md — LFS inventory verification and lockfile byte/completeness checks across all four trees
+- [x] 01-06-PLAN.md — LFS inventory verification and lockfile byte/completeness checks across all four trees
 
 **Wave 7** *(blocked on Wave 6 completion)*
-- [ ] 01-09-PLAN.md — One-command `just verify`, consolidated CLI, workspace-isolation proof, and the `provenance-replay` CI job
+- [x] 01-09-PLAN.md — One-command `just verify`, consolidated CLI, workspace-isolation proof, and the `provenance-replay` CI job
 
 ### Phase 2: Rebrand, Wire Contract & Migration
 
@@ -328,7 +328,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Import & Provenance Ledger | 0/TBD | Not started | - |
+| 1. Import & Provenance Ledger | 9/9 | Complete    | 2026-10-25 |
 | 2. Rebrand, Wire Contract & Migration | 0/TBD | Not started | - |
 | 3. Unified Loop & Session Authority | 0/12 | Not started | - |
 | 4. Tool Registry & Policy Gate | 0/7 | Not started | - |
