@@ -143,4 +143,36 @@ describe('manifest canonical form', () => {
     expect(isLedgerPath('provenance.json')).toBe(false);
     expect(isLedgerPath('src/provenance/x.ts')).toBe(false);
   });
+
+  test('a UTF-8 BOM is rejected', () => {
+    const line = formatLine('100644', 'b'.repeat(40), 'a'.repeat(64), 'bom.txt');
+    expect(conditionOf(() => readManifest(`\uFEFF${MANIFEST_HEADER}\n${line}\n`))).toBe('bom');
+  });
+
+  test('out-of-order rows render the same bytes as sorted rows', () => {
+    const rows = [
+      row('100644', 'src/zeta.ts'),
+      row('100644', 'LICENSE'),
+      row('100755', 'bin/run.sh'),
+      row('120000', 'link'),
+    ];
+    const permutations = [
+      [...rows].reverse(),
+      [rows[2], rows[0], rows[3], rows[1]],
+      [rows[1], rows[3], rows[0], rows[2]],
+    ];
+    for (const permutation of permutations) {
+      expect(renderManifest(permutation)).toBe(renderManifest(rows));
+    }
+  });
+
+  test('a Unicode filename round-trips under byte ordering', () => {
+    const text = renderManifest([
+      row('100644', 'naïve-résumé.ts'),
+      row('100644', 'naive.ts'),
+    ]);
+    const paths = readManifest(text).map((entry) => entry.path);
+    expect(paths).toEqual(['naive.ts', 'naïve-résumé.ts']);
+    expect(renderManifest(readManifest(text))).toBe(text);
+  });
 });
