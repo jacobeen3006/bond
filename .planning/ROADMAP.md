@@ -292,7 +292,14 @@ Plans:
   4. Preemption cancels only at operation boundaries and requeues or retires cancelled work without corrupting memory state (SCHD-04).
   5. A Low-profile soak (concurrent L3 retains plus periodic L0 recalls) demonstrates the lane SLOs under concurrency (SCHD-07).
 
-**Plans**: TBD
+**Plans**: 3 plans
+
+**Wave 1**
+- [ ] 09-01-PLAN.md — Tracer: pi-scheduler crate + per-lane semaphores + WFQ dispatcher; L0-never-behind-L3 invariant proven
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 09-02-PLAN.md — Revocable leases + cooperative boundary-aligned preemption (SCHD-04) + L1 10s deadline with visible degraded signal (SCHD-03)
+**Wave 3** *(blocked on Wave 2 completion)*
+- [ ] 09-03-PLAN.md — SLO metrics + 200ms delay-bound proof under load (SCHD-02) + Low-profile 4-worker-thread soak (SCHD-07)
 
 ### Phase 10: Desktop & CLI Product Surface
 
