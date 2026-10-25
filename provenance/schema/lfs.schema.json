@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://halo.local/provenance/lfs.schema.json",
+  "title": "HALO LFS inventory",
+  "description": "An inventory of the paths one vendored subtree declares as Git LFS at the pinned commit. It is not a fetch: `object_verified` stays false unless the payload was pulled into `upstream-cache/`, never into `vendor/`.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["schema", "subtree", "tracked", "upstream_gitattributes_lfs_lines"],
+  "properties": {
+    "schema": { "const": "halo/lfs/v1" },
+    "subtree": { "type": "string", "minLength": 1, "pattern": "^[a-z0-9][a-z0-9-]*$" },
+    "tracked": {
+      "type": "array",
+      "description": "One record per path `git lfs ls-files <commit>` reports. Empty is a legal inventory: a commit that tracks no LFS objects has nothing to verify, and the declared `.gitattributes` lines below still record why.",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["path", "oid", "size", "pointer_verified", "object_verified"],
+        "properties": {
+          "path": { "type": "string", "minLength": 1 },
+          "oid": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+          "size": { "type": "integer", "minimum": 0 },
+          "pointer_verified": {
+            "type": "boolean",
+            "description": "True only after `parsePointer` accepted the vendored bytes and their oid/size matched this record."
+          },
+          "object_verified": {
+            "type": "boolean",
+            "description": "True only when the payload exists under `upstream-cache/` and its SHA-256 equals `oid`. A payload inside `vendor/` is a finding, never a verification."
+          }
+        }
+      }
+    },
+    "upstream_gitattributes_lfs_lines": {
+      "type": "array",
+      "description": "The LFS-declaring lines of the upstream `.gitattributes` at the pinned commit, verbatim. Copied rather than re-parsed, so a change upstream is visible as a byte difference.",
+      "items": { "type": "string", "minLength": 1 }
+    }
+  }
+}
