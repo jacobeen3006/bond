@@ -40,11 +40,12 @@ created: "2026-10-25"
 
 | Task ID | Plan | Wave | Requirement | Threat Ref | Secure Behavior | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
-| (planner fills per task) | — | — | MEM-01 | T-08-01 | PG binds 127.0.0.1 only; scram-sha-256; password in secret store | integration | `bun test packages/sidecars/tests/pg-boot.test.ts` | ❌ W0 | ⬜ pending |
-| (planner fills per task) | — | — | MEM-02 | T-08-02 | SHA-256-verified pgvector artifact; version mismatch fails startup | integration + CI gate | `bun test packages/sidecars/tests/pgvector-version.test.ts` + `nmake installcheck` | ❌ W0 | ⬜ pending |
-| (planner fills per task) | — | — | MEM-03 | T-08-03 | Sidecars keyed (`--api-key`), loopback-only, restart backoff | integration | `bun test packages/sidecars/tests/llama-sidecar.test.ts` | ❌ W0 | ⬜ pending |
-| (planner fills per task) | — | — | MEM-04 | T-08-04 | Per-op LLM env config; degraded-mode fallback recorded | integration | `bun test packages/sidecars/tests/hindsight-embed.test.ts` | ❌ W0 | ⬜ pending |
-| (planner fills per task) | — | — | MEM-06 | T-08-05 | `operation_id` replay 409; `recover_own_tasks` on poller start | integration | `bun test packages/sidecars/tests/retain-idempotency.test.ts` | ❌ W0 | ⬜ pending |
+| 08-01 T1 | 08-01 | 1 | MEM-01 | T-08-01 | PG binds 127.0.0.1 only; scram-sha-256; password in secret store | integration | `bun test packages/sidecars/tests/pg-boot.test.ts` | ❌ W0 | ⬜ pending |
+| 08-02 T2 | 08-02 | 2 | MEM-02 | T-08-02 | SHA-256-verified pgvector artifact; version mismatch fails startup | integration + CI gate | `bun test packages/sidecars/tests/pgvector-version.test.ts` + `nmake installcheck` | ❌ W0 | ⬜ pending |
+| 08-03 T2 | 08-03 | 2 | MEM-03 | T-08-03 | Sidecars keyed (`--api-key`), loopback-only, restart backoff | integration | `bun test packages/sidecars/tests/llama-sidecar.test.ts` | ❌ W0 | ⬜ pending |
+| 08-04 T1 | 08-04 | 2 | MEM-04 | T-08-04 | Per-op LLM env config; degraded-mode fallback recorded | integration | `bun test packages/sidecars/tests/hindsight-embed.test.ts` | ❌ W0 | ⬜ pending |
+| 08-04 T2 | 08-04 | 2 | MEM-06 | T-08-05 | `operation_id` replay 409; `recover_own_tasks` on poller start | integration | `bun test packages/sidecars/tests/retain-idempotency.test.ts` | ❌ W0 | ⬜ pending |
+| 08-05 T1 | 08-05 | 2 | — | T-08-06 | No package installed (T-08-SC); gate fails closed at first non-zero exit | gate | `just sidecars-tests` + `just verify` | ✅ | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
