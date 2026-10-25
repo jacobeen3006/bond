@@ -332,24 +332,24 @@ def kill_child(child_id, in_flight_core_ids, child_process_tree):
 | A3 | The child's `session_gate_state` can be seeded from the parent's row with the existing `store.set_session_approval_mode` / `grant_session_pattern` writers (no new writer needed). | Pattern 3 | If a bulk "copy gate row" writer is needed, it is a small additive store method; low risk. |
 | A4 | A killed child's turn closes `interrupted` with a continuable history, so Phase 3 `resume(child_session_id)` is a valid "restore." | Pattern 5 | If the interrupt path leaves a non-resumable transcript, restore needs a dedicated path. **Mitigation:** the Phase 3 plan 08 already guarantees a continuable, truthful history after interrupt; Wave-0 verifies. |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Concurrent `run_turn` safety (A1).**
+1. **Concurrent `run_turn` safety (A1).** (RESOLVED: `D-G7-A1` in `07-DECISIONS.md` — verify in Wave 0; fallback serialize per session.)
    - What we know: the loop is per-session; the store has one writer thread; the authority is a singleton.
    - What's unclear: whether `AgentLoop` has unguarded shared mutable state that breaks concurrent per-session `run_turn`.
    - Recommendation: Wave-0 verification task; if not safe, serialize per-session and let the cap bound the queue.
 
-2. **Per-session process attribution in the core (A2).**
+2. **Per-session process attribution in the core (A2).** (RESOLVED: `D-G7-A2` in `07-DECISIONS.md` — probe in Wave 0; fallback minimal provenance patch.)
    - What we know: the core's `bash` tool spawns processes; the `abort` command is keyed by `id`.
    - What's unclear: whether the core attributes spawned processes to a session/call so the Python side can kill only the child's tree.
    - Recommendation: Wave-0 probe; if absent, a minimal provenance patch adds per-call process attribution.
 
-3. **Default concurrency cap and recursion depth.**
+3. **Default concurrency cap and recursion depth.** (RESOLVED: `D-G7-cap` in `07-DECISIONS.md` — 3 concurrent, depth 2.)
    - What we know: OMP defaults to `maxConcurrency=3`, `maxRecursionDepth=2`; Hermes defaults to `max_concurrent_children=10`, `MAX_DEPTH=1` (flat).
    - What's unclear: HALO's product defaults.
    - Recommendation: adopt OMP's conservative defaults (`3` concurrent, depth `2`) as the recorded default; flag for product confirmation (mirrors the Phase 4 D-G7 pattern of recording, not settling, a default).
 
-4. **Whether a child can spawn its own children (nesting).**
+4. **Whether a child can spawn its own children (nesting).** (RESOLVED: `D-G7-nesting` in `07-DECISIONS.md` — allow sub-spawns to the depth cap.)
    - What we know: the recursion-depth cap bounds nesting; `agent_kind="sub"` + the depth cap gate it.
    - What's unclear: whether HALO allows a sub to spawn a sub (depth 2) or is flat (depth 1, Hermes default).
    - Recommendation: default to the depth cap (allow nesting up to the cap); the cap is the authority, not a hard flat rule.
