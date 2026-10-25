@@ -160,3 +160,49 @@ paths, their local paths, the symbols HALO depends on, and the contract test
 that fails when the contract drifts. Add a `tests/provenance/cve-drill.test.ts`
 entry to every watch entry that has none, and update `last_checked` whenever the
 drill is run against a new advisory class.
+
+## The one gate: `just verify`, locally and in CI
+
+`just verify` is the whole provenance system in one command, and the only
+documented verification entry point. In order:
+
+0. `fetch --all` — rehydrate `upstream-cache/` from the SHAs in every
+   `UPSTREAM.json`. A no-op on a warm cache; the difference between green and
+   `exit 2` on a clone that has never fetched (step 0 above).
+1. `verify --all` — ledger digests, the vendored index, the worktree, and the
+   unrecorded-edit detector.
+2. `replay --all` — reconstruct every tree from its SHA, `patches/series` and
+   renames, and compare byte for byte.
+3. `bun test tools/provenance` — the module suites.
+4. `bun test tests/provenance` — the repository suites, including
+   `workspace-isolation.test.ts` (no root workspace, no vendored `.git`, no
+   submodule).
+
+Every step fails closed and `just` stops at the first non-zero exit, so one
+command answers "is the ledger still true?".
+
+`.github/workflows/provenance.yml` defines one job, `provenance-replay`, whose
+final step is `just verify` — the same command, never a copy of its steps. The
+job installs Bun (`windows-latest` ships Node but not Bun), installs `just`,
+restores `upstream-cache/` under a key derived from the recorded
+`vendor/*/provenance/UPSTREAM.json` files, runs
+`bun run tools/provenance/cli.ts fetch --all` (cold-cache safety: the same
+step 0 the local gate runs), then the gate itself.
+
+Status: **workflow committed; remote not configured.** This repository has no
+remote yet, so the CI job has never run. Until one exists and the workflow is
+pushed, `just verify` locally is the gate.
+
+### The commit gate
+
+Cheaper than the full gate, and safe on every commit that touches the ledger.
+Enable it once per clone:
+
+```
+git config --local core.hooksPath .githooks
+```
+
+`.githooks/pre-commit` runs `provenance-verify` only when the staged paths touch
+`vendor/` or `provenance/`, and exits immediately otherwise. It never contacts a
+remote and never replays (DEC-02); replay stays the deliberate act that
+`just verify` performs.

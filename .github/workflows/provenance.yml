@@ -1,0 +1,58 @@
+# The provenance gate in CI — the same command the developer runs.
+#
+# Status: committed, and inert until this repository has a remote. There is no
+# divergent step list here on purpose: the last step is `just verify`, the exact
+# recipe a developer runs locally, so the two gates cannot drift.
+name: provenance
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  provenance-replay:
+    name: provenance-replay
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Mandatory: the windows image ships Node, not Bun, and every gate
+      # command starts with `bun`. Without this, the job dies with
+      # "bun: command not found" before reaching the gate.
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.2
+
+      # winget is chosen as the `just` installer because the Windows runner
+      # image ships it and its Links directory is already on PATH.
+      - name: Install just
+        shell: pwsh
+        run: winget install --id Casey.Just --exact --accept-source-agreements --accept-package-agreements
+
+      - name: Bun presence check
+        shell: pwsh
+        run: bun --version
+
+      # Keyed on the recorded ledgers, never a static key: a hit can only serve
+      # the commits this repository currently pins.
+      - name: Restore the upstream cache
+        uses: actions/cache@v4
+        with:
+          path: upstream-cache
+          key: upstream-cache-${{ hashFiles('vendor/*/provenance/UPSTREAM.json') }}
+
+      # Not optional: replay exits 2 when a cache or a pinned commit is missing
+      # (first run, eviction, or a fork's PR). `--all` pins to each
+      # UPSTREAM.json commit, so this is a no-op on a warm cache and a
+      # deterministic fetch on a cold one.
+      - name: Rehydrate the pinned commits
+        shell: pwsh
+        run: bun run tools/provenance/cli.ts fetch --all
+
+      # The gate itself. Same recipe, same exit code.
+      - name: Verify (just verify)
+        shell: pwsh
+        run: just verify
