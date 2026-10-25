@@ -367,22 +367,25 @@ HINDSIGHT_API_LLM_PROVIDER=none                    # chunk-store; rerank fails o
 | A4 | The Hermes secret store is `auth.json` under `HERMES_HOME` for the PG password | Pattern 6 | If HALO uses a different store, the password location changes; low risk (the store is the documented Hermes credential location) |
 | A5 | `winloop` is required for Hindsight on Windows (proactor loop) | Standard Stack | Verified in `main.py` (`winloop.install()` on win32); low risk |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **2s coalescing window ownership.**
    - What we know: Hindsight's coalescing is claim-time folding (`DEFAULT_MAX_FOLD_PEERS = 16`), not a time window.
    - What's unclear: whether the locked "2s-window coalescing on `document_id`" is a HALO-shim requirement or was assumed to be a Hindsight feature.
    - Recommendation: implement it in the HALO retain shim (debounce per `document_id`); record the decision. Low risk either way.
+   - *(RESOLVED: recorded decision in plan 08-01 — the 2s coalescing window is a HALO retain shim (debounce per `document_id`), not a Hindsight change; the `operation_id` is the idempotency key.)*
 
 2. **Chat LLM for retain/reflect/consolidation.**
    - What we know: MEM-03 names only embedder + reranker sidecars. Hindsight's LLM operations need a text-generation LLM or `provider=none`.
    - What's unclear: whether the MVP ships a third `llama-server` (small chat model) or defaults to `none` (chunk-store degraded).
    - Recommendation: default to `none` (chunk-store + rrf) as the recorded degraded decision; add a chat-model sidecar only if consolidation quality is required. Confirm with the user before adding a third sidecar.
+   - *(RESOLVED: recorded decision in plan 08-01 — default `HINDSIGHT_API_LLM_PROVIDER=none` (chunk-store + rrf failover) as the degraded decision; no third `llama-server` chat sidecar added without a recorded decision.)*
 
 3. **`--pooling` for the embedder.**
    - What we know: bge-small-en-v1.5 uses mean pooling; llama-server's default is "model default if unspecified".
    - What's unclear: whether to pass `--pooling mean` explicitly or rely on the model default.
    - Recommendation: pass `--pooling mean` explicitly (deterministic across model conversions).
+   - *(RESOLVED: recorded decision in plan 08-01 — `--pooling mean` is explicit in the embedder argv, not a model default.)*
 
 ## Environment Availability
 
