@@ -420,22 +420,25 @@ async def refresh_mental_model(self, bank_id, mental_model_id, *, mode=None, req
 
 **If this table is empty:** All claims were verified or cited. (Not empty — A1–A4 above need confirmation.)
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Exact total concurrency budget for the Low profile**
    - What we know: Reserved shares are 40/20/25/15% (locked); `HINDSIGHT_API_LLM_MAX_CONCURRENT=4` (locked).
    - What's unclear: The absolute permit count per lane (A1 assumes budget 10 → 4/2/2/1).
    - Recommendation: Derive the budget from the Low-profile hardware (≤4 vCPU) and `HINDSIGHT_API_LLM_MAX_CONCURRENT=4`; confirm the per-lane permit counts in the plan.
+   - RESOLVED: 09-01 Task 1 step 3 — `LaneConfig::for_budget(budget)` parameterizes per-lane permit counts from the locked 40/20/25/15% ratios (ratios locked, absolute counts scale with the real budget).
 
 2. **Exact L1 low-budget fallback semantics**
    - What we know: L1 degrades to a "low-budget recall" with a visible degraded signal (SCHD-03).
    - What's unclear: Whether a low-budget recall mode already exists in Hindsight or must be added (A3).
    - Recommendation: Read the Hindsight recall path to confirm the fallback mode before locking the degraded-signal contract.
+   - RESOLVED: 09-02 FA-5 — pluggable fallback closure: the exact Hindsight low-budget recall mode is wired in Phase 10; the degraded-signal contract is fixed in Phase 9.
 
 3. **Where the WFQ dispatcher's L3 50% cap is measured**
    - What we know: L3 is capped at 50% of capacity (locked).
    - What's unclear: Whether the cap is on *active* L3 permits (in-flight) or *queued* L3 depth.
    - Recommendation: Cap on *active* L3 permits (in-flight), so a burst of queued L3 work cannot starve L0/L1; confirm in the plan.
+   - RESOLVED: 09-01 Task 1 step 4 — the L3 50% cap is measured on ACTIVE/in-flight L3 permits (not queued depth), so a burst of queued L3 work cannot starve L0/L1.
 
 ## Environment Availability
 
