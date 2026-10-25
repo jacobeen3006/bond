@@ -20,10 +20,10 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-10-23)
+See: .planning/PROJECT.md (updated 2026-10-25)
 
 **Core value:** One non-bypassable tool path — every LLM tool decision reaches exactly one backend through a single adapter and a single policy gate, so no policy (TDD enforcement, safety, memory routing) can be skipped by choosing the other runtime.
-**Current focus:** Phase 01 — Import & Provenance Ledger
+**Current focus:** Phase 02 — Rebrand, Wire Contract & Migration
 
 ## Current Position
 
@@ -90,6 +90,6 @@ Items acknowledged and deferred at milestone close, most recent first:
 
 ## Session Continuity
 
-Last session: 2026-10-24
-Stopped at: Phase 01 complete, ready to execute Phase 02
+Last session: 2026-10-25
+Stopped at: Phase 01 complete, ready to plan Phase 02
 Resume file: None

@@ -89,6 +89,11 @@ One non-bypassable tool path: every LLM tool decision reaches exactly one backen
 | TDD invariants enforced in `pre_tool_call` policy, not in skill prose | Policy at the single chokepoint cannot be bypassed by the coding core choosing a different path | — Pending |
 | llama.cpp `llama-server` replaces HuggingFace TEI for CPU embedding/reranking, and PROJECT assumptions were amended to match | TEI publishes no Windows binaries, has no Windows CI, and documents no Windows install path — bundling it would mean owning an unproven cross-compile. llama.cpp ships real Windows binaries and keeps the HTTP-sidecar isolation the scheduler depends on (in-process fastembed would break it) | — Pending |
 | Hindsight auto-recall never blocks the first chat turn on inference-sidecar readiness | Boot latency beats correctness here; degrade to the local embedder with a visible warning | — Pending |
+| Provenance ledger is the single source of truth for the vendored trees: UPSTREAM.json + PATHS/RENAMES/EXCLUDES + MANIFEST.vendored.tsv, with byte-for-byte replay from SHA + patches/series + RENAMES.json | The ledger is cheapest at import and impossible to reconstruct later (P-01); a canonical, replayable manifest makes the rebrand (Phase 2) auditable and the import verifiable offline | ✓ Phase 1 |
+| LFS-tracked content is inventoried as pointers; the payload is never fetched into vendor/ | Keeps the import small and the replay deterministic; the payload stays in the LFS cache, referenced by pointer | ✓ Phase 1 |
+| Licence paths are pinned by blob OID + raw-byte SHA-256, with a machine-readable rebrand deny-list covering every licence path | The rebrand must never touch copyright text; pinning by OID + a deny-list gate makes the guard sensitive rather than vacuous | ✓ Phase 1 |
+| The pre-commit hook enforces the provenance gate: an unrecorded vendored edit fails (UNRECORDED), a recorded patch clears it | The gate is non-bypassable at commit time, not just in CI; a recorded patch is the only way to change a vendored tree | ✓ Phase 1 |
+| `just verify` is the single documented command; the CI job runs the gate from a cold cache with a cache key derived from the recorded SHAs | One command for the whole provenance gate; a cold-cache CI run proves the gate does not depend on a warm local cache | ✓ Phase 1 |
 
 ## Evolution
 
@@ -108,4 +113,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-10-23 after research (TEI→llama.cpp amendment, RPC wire-rename scope)*
+*Last updated: 2026-10-25 after Phase 1 (Import & Provenance Ledger)*
