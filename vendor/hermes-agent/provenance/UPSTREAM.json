@@ -24,9 +24,119 @@
         "path": "LICENSE",
         "blob": "75410e73319c72cd3e991a501c5455eb78f38375",
         "sha256": "821556e6336796450ab852d375117b48a4887e71d255794fd6318d99982a5ab6"
+      },
+      {
+        "path": "apps/desktop/src/components/free-tier/notice-owner.test.tsx",
+        "blob": "738802e56b4d20bda94d251995fac923d5abfdda",
+        "sha256": "9770479fd0e8f877b20d9a967e522fb426259e810a8bebd37b047a186f8d5f4b"
+      },
+      {
+        "path": "apps/desktop/src/components/free-tier/notice-strip.tsx",
+        "blob": "c2e8ce2e5232d0349b13bd79a64c5a39c8bd6935",
+        "sha256": "64a2385fb4f2ec63275bbd4c4b382f1b66713143adbdb72f44a3dd0fd0cd83ca"
+      },
+      {
+        "path": "apps/desktop/src/plugins/hermes-bots/LICENSE",
+        "blob": "5700b997827973cb0eb6d84a2782bb08a5872434",
+        "sha256": "5f79d321c17de8ef6e5f34967dc5b484afebeeefd87180890d9741941f6b815f"
+      },
+      {
+        "path": "evals/postmortem/review_probes/notice_delivery_probe.py",
+        "blob": "70a6a8f54779e40a8cc9aeac5194f95bfff59da9",
+        "sha256": "7c1b49d50ad17dd214bdc46b1b8f9facc1ece45f226151b898063d594eeaa29e"
+      },
+      {
+        "path": "optional-skills/creative/ai-presenter-video/LICENSE",
+        "blob": "f5be3d70a1274e873026c32c0b1d0052ceb48f0a",
+        "sha256": "5ee4e300085ba144aae1ec5b72774ef5408bd933c1f02f429359313a4251bfad"
+      },
+      {
+        "path": "optional-skills/creative/anatomy/LICENSE.txt",
+        "blob": "aa20733917ffc919b6b04834e6a6e22909df7c76",
+        "sha256": "87c078ab9d90a3044f359e6b563d4e6afea7aa060897cf4f21618687b3856796"
+      },
+      {
+        "path": "optional-skills/creative/auteur/LICENSE",
+        "blob": "6c92f892af27263b2ac8389d12dd1eb00df509a7",
+        "sha256": "bf05f978d8f8023c8eca67afdcac26fdbaf793fbe3b742a06a74d04c793d9cf2"
+      },
+      {
+        "path": "optional-skills/creative/dream-loop/LICENSE.txt",
+        "blob": "dd54a3e60d5fe9e2296c4745c5b826d74158c852",
+        "sha256": "1607e9149a254c619d0ceb4119ed9346e13048c28c1d437d80ff2837e40159da"
+      },
+      {
+        "path": "optional-skills/creative/ip-as-logo/LICENSE",
+        "blob": "20d6f05be31d096b17614c1a22b3f2caf3577a48",
+        "sha256": "ff717ba18c263ade5fdaf25a9e7545a34796af984fadcb8f01e91672abe4229e"
+      },
+      {
+        "path": "optional-skills/creative/mono-color/LICENSE.txt",
+        "blob": "435602ebc03972a554ea6780a527f57ffaa173ac",
+        "sha256": "2025880f6441e121c76c01bc5996e84a7498d9d5aa7222a10400d303bdd043cb"
+      },
+      {
+        "path": "optional-skills/creative/system-atlas/LICENSE.txt",
+        "blob": "3d7770daf10008ac8579f0d5d5135ccb7aeb015c",
+        "sha256": "28d538f4ce6d517ea6f04a67fc4a2bf60f69254f696ba21fa1946cc668c21767"
+      },
+      {
+        "path": "optional-skills/software-development/ast-grep/LICENSE",
+        "blob": "09aac3c3b7f6e26e8520b362eb048d4d8f9165c3",
+        "sha256": "b083425948376611de9b92b0aeb7377e604505756ea427e541a34d9b030d4dc1"
+      },
+      {
+        "path": "optional-skills/software-development/pr-lens/LICENSE.txt",
+        "blob": "c0a0960d0175a19f9a017b0065bf89522b37f381",
+        "sha256": "f95e90af396c71c9a94648bd58e4f5bb2dcab4f6ac3ab7d3d2ca3f4e4f4a1ae7"
+      },
+      {
+        "path": "optional-skills/web-development/scrollcraft/LICENSE.txt",
+        "blob": "d24ab435093a0c0dd35f31f68224ee276c9cc2ef",
+        "sha256": "dd471a27eca72488a53e6ea6fbe9392d81aa3f01e950e63fe328affb2ddfa6e3"
+      },
+      {
+        "path": "plugins/hermes-achievements/LICENSE",
+        "blob": "2312b9235214767563d8618156d68ca78e23b766",
+        "sha256": "5c6bbd852eeff017e73830408977d26e4379c5f9bb6edb03fce171f81db5fe43"
+      },
+      {
+        "path": "plugins/security-guidance/LICENSE",
+        "blob": "d645695673349e3947e8e5ae42332d0ac3164cd7",
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      },
+      {
+        "path": "plugins/security-guidance/NOTICE",
+        "blob": "cb5067c3d085089aec61cdc06d8f29c274df410f",
+        "sha256": "adc3dd09b90dd9240f56d5b9c782986028a312ab150c84a208de1a5d2b948227"
+      },
+      {
+        "path": "skills/creative/humanizer/LICENSE",
+        "blob": "625297fb778f32eb39d3a5b97e3e3b611b7304d6",
+        "sha256": "4ac4810254ab36d45419141aeb8e69bf50652cfafe5b2dab947d06d44e5cbf96"
+      },
+      {
+        "path": "skills/productivity/docx/LICENSE",
+        "blob": "0dddbf167070de3fd2f48f192feb198ac98d1f63",
+        "sha256": "8aa3c7717d57a68490c31eef4b57b6887e892f0566ff866078ebd76113d357e2"
+      },
+      {
+        "path": "skills/productivity/pdf/LICENSE",
+        "blob": "0dddbf167070de3fd2f48f192feb198ac98d1f63",
+        "sha256": "8aa3c7717d57a68490c31eef4b57b6887e892f0566ff866078ebd76113d357e2"
+      },
+      {
+        "path": "skills/productivity/powerpoint/LICENSE",
+        "blob": "0dddbf167070de3fd2f48f192feb198ac98d1f63",
+        "sha256": "8aa3c7717d57a68490c31eef4b57b6887e892f0566ff866078ebd76113d357e2"
+      },
+      {
+        "path": "skills/productivity/xlsx/LICENSE",
+        "blob": "0dddbf167070de3fd2f48f192feb198ac98d1f63",
+        "sha256": "8aa3c7717d57a68490c31eef4b57b6887e892f0566ff866078ebd76113d357e2"
       }
     ],
-    "copyright_notice_count": 3
+    "copyright_notice_count": 68
   },
   "lockfiles": [
     {

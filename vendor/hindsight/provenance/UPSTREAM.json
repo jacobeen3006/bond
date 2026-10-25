@@ -24,9 +24,54 @@
         "path": "LICENSE",
         "blob": "8dce7b4d4c2632990bdf8b4101694ea19ba6ad46",
         "sha256": "01fde0bedf83bdc185065d7af524a61690efe576a67f922eaff3a1280c17b63a"
+      },
+      {
+        "path": "hindsight-control-plane/src/app/fonts/LICENSE.md",
+        "blob": "94809a888c21792cf2e69d53075e58acd14193d4",
+        "sha256": "fead9d32922ca782823378a0a86ae18251eaf9f0bddd4d0bbfeb04b8470f15da"
+      },
+      {
+        "path": "hindsight-integrations/agentcore/LICENSE",
+        "blob": "8dce7b4d4c2632990bdf8b4101694ea19ba6ad46",
+        "sha256": "01fde0bedf83bdc185065d7af524a61690efe576a67f922eaff3a1280c17b63a"
+      },
+      {
+        "path": "hindsight-integrations/cursor/LICENSE",
+        "blob": "8dce7b4d4c2632990bdf8b4101694ea19ba6ad46",
+        "sha256": "01fde0bedf83bdc185065d7af524a61690efe576a67f922eaff3a1280c17b63a"
+      },
+      {
+        "path": "hindsight-integrations/dify/LICENSE",
+        "blob": "2d234d0379acd2fd196203f65cc23bf0f5d8a99a",
+        "sha256": "a7cf450a8f2e57ddaf4129638bee73a698578ed7fd0c2581293dc5bcf32c41a2"
+      },
+      {
+        "path": "hindsight-integrations/google-adk/LICENSE",
+        "blob": "46fed5bdc1ddc167ed4fba9ac7a6c61567bc0f10",
+        "sha256": "da9695ab21946dceed601f1a0e4075a5a890143bf0c41a6e0c4f14394583dd45"
+      },
+      {
+        "path": "hindsight-integrations/obsidian/LICENSE",
+        "blob": "46fed5bdc1ddc167ed4fba9ac7a6c61567bc0f10",
+        "sha256": "da9695ab21946dceed601f1a0e4075a5a890143bf0c41a6e0c4f14394583dd45"
+      },
+      {
+        "path": "hindsight-integrations/pipecat/LICENSE",
+        "blob": "8dce7b4d4c2632990bdf8b4101694ea19ba6ad46",
+        "sha256": "01fde0bedf83bdc185065d7af524a61690efe576a67f922eaff3a1280c17b63a"
+      },
+      {
+        "path": "hindsight-integrations/roo-code/LICENSE",
+        "blob": "46fed5bdc1ddc167ed4fba9ac7a6c61567bc0f10",
+        "sha256": "da9695ab21946dceed601f1a0e4075a5a890143bf0c41a6e0c4f14394583dd45"
+      },
+      {
+        "path": "hindsight-integrations/vapi/LICENSE",
+        "blob": "8dce7b4d4c2632990bdf8b4101694ea19ba6ad46",
+        "sha256": "01fde0bedf83bdc185065d7af524a61690efe576a67f922eaff3a1280c17b63a"
       }
     ],
-    "copyright_notice_count": 3
+    "copyright_notice_count": 29
   },
   "lockfiles": [
     {

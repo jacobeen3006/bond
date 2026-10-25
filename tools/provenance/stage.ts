@@ -27,6 +27,7 @@ import {
   writeUpstreamLedger,
   type UpstreamLedger,
 } from './ledger';
+import { buildLicenseBlock } from './license';
 import {
   comparePaths,
   hashBlob,
@@ -618,10 +619,6 @@ export function lfsVersion(): string {
   return toolVersion('git-lfs', /git-lfs\/(\S+)/, 'unknown');
 }
 
-export function countCopyrightNotices(bytes: Buffer): number {
-  return (bytes.toString('utf8').match(/copyright/gi) ?? []).length;
-}
-
 /** `import --tree <name> [--sha <sha>]` */
 export function importTree(baseDir: string, tree: string, shaOverride?: string): ImportResult {
   const cache = cacheDir(baseDir, tree);
@@ -804,10 +801,9 @@ export function importFromCache(
   writeFileSync(ledger.renames, serializeLedger(deriveRenames(tree)), 'utf8');
   writeFileSync(ledger.excludes, serializeLedger(deriveExcludes(tree)), 'utf8');
 
-  const licenseRow = treeRows.find((row) => row.path === 'LICENSE');
-  if (!licenseRow) {
-    throw new ProvenanceError(`license: no LICENSE file in ${tree}`, 2);
-  }
+  const licenseBlock = buildLicenseBlock(upstreamRows, (relPath) =>
+    readFileSync(join(targetRoot, ...relPath.split('/'))),
+  );
 
   const document: UpstreamLedger = {
     schema: 'halo/upstream/v1',
@@ -830,13 +826,8 @@ export function importFromCache(
     },
     license: {
       spdx: 'MIT',
-      files: [{ path: licenseRow.path, blob: licenseRow.oid, sha256: hashBlob(licenseRow.oid, cache) }],
-      copyright_notice_count: countCopyrightNotices(
-        execFileSync('git', ['cat-file', 'blob', licenseRow.oid], {
-          cwd: cache,
-          maxBuffer: MAX_BUFFER,
-        }),
-      ),
+      files: licenseBlock.files,
+      copyright_notice_count: licenseBlock.copyright_notice_count,
     },
     lockfiles: treeRows
       .filter((row) => LOCKFILE_NAMES[row.path.split('/').pop() ?? ''] === true)

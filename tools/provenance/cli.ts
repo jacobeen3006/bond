@@ -26,8 +26,16 @@ import {
   readUpstreamLedger,
   relativePosix,
   serializeLedger,
+  type UpstreamLedger,
   writeUpstreamLedger,
 } from './ledger';
+import {
+  buildLicenseBlock,
+  assertDenylistCovers,
+  DenylistCoverageError,
+  loadDenylist,
+  treeReader,
+} from './license';
 import { hashFile, readManifestFile } from './manifest';
 import { ProvenanceError } from './paths';
 import { replayTree } from './replay';
@@ -48,6 +56,8 @@ commands:
   manifest         --tree <name> | --all                     restage and refresh the vendored manifest
   replay           --tree <name> | --all                     reconstruct and compare byte-for-byte
   check-attributes --tree <name> | --all                     fail when a filter rewrote a blob
+  license          --tree <name> | --all                     re-pin every licence-ish path by raw bytes
+  denylist-check                                            prove the rebrand deny-list covers the import
 `;
 
 export type CliOptions = {
@@ -63,7 +73,16 @@ export function parseArgs(argv: readonly string[]): CliOptions | null {
   if (argv.length === 0 || argv.includes('--help') || argv.includes('-h')) return null;
   const rawCommand = argv[0];
   const command = COMMAND_ALIASES[rawCommand] ?? rawCommand;
-  const allowed = new Set(['fetch', 'import', 'ledger', 'manifest', 'replay', 'check-attributes']);
+  const allowed = new Set([
+    'fetch',
+    'import',
+    'ledger',
+    'manifest',
+    'replay',
+    'check-attributes',
+    'license',
+    'denylist-check',
+  ]);
   if (!allowed.has(command)) {
     throw new ProvenanceError(`unknown command: ${rawCommand}`, 2);
   }
@@ -105,7 +124,13 @@ export function parseArgs(argv: readonly string[]): CliOptions | null {
   if (tree !== null && all) {
     throw new ProvenanceError('--tree and --all are mutually exclusive', 2);
   }
-  if (fixture !== null) {
+  if (command === 'denylist-check') {
+    // One invocation covers every imported tree by construction: the contract is
+    // about the whole import, not one subtree.
+    if (tree !== null || all) {
+      throw new ProvenanceError('denylist-check takes no --tree or --all', 2);
+    }
+  } else if (fixture !== null) {
     if (command !== 'import') {
       throw new ProvenanceError('--fixture is only valid with import', 2);
     }
@@ -271,6 +296,85 @@ export function ledgerCommand(baseDir: string, tree: string, force: boolean): nu
   return 0;
 }
 
+/**
+ * `license --tree <name>`: re-pin every licence-ish path from
+ * `MANIFEST.upstream.tsv`, by raw bytes.
+ *
+ * The candidate set is the manifest, never a directory walk, so an ignored or
+ * filtered file cannot hide from the ledger. Only the `license` block is
+ * rewritten, and only when its bytes would change, so a second run is a no-op.
+ * `readFileSync` is the reader: a `git show` piped through a filter could hand
+ * back bytes the worktree does not hold, which is the one thing this pin exists
+ * to detect.
+ */
+export function licenseCommand(baseDir: string, tree: string): number {
+  const ledger = ledgerPaths(baseDir, tree);
+  if (!existsSync(ledger.manifestUpstream)) {
+    throw new ProvenanceError(
+      `missing ledger: vendor/${tree}/provenance/MANIFEST.upstream.tsv`,
+      2,
+    );
+  }
+  const rows = readManifestFile(ledger.manifestUpstream);
+  const document = readUpstreamLedger(baseDir, tree);
+  const block = buildLicenseBlock(rows, treeReader(ledger.root));
+
+  const next: UpstreamLedger = {
+    ...document,
+    license: {
+      spdx: document.license?.spdx ?? 'MIT',
+      files: block.files,
+      copyright_notice_count: block.copyright_notice_count,
+    },
+  };
+  if (serializeLedger(next) !== readFileSync(ledger.upstream, 'utf8')) {
+    writeUpstreamLedger(baseDir, tree, next);
+  }
+
+  process.stdout.write(
+    `LICENSE OK ${tree} files=${block.files.length} ` +
+      `copyright_notices=${block.copyright_notice_count}\n`,
+  );
+  return 0;
+}
+
+/**
+ * `denylist-check`: prove the contract covers the import.
+ *
+ * A glob that matches nothing is a guard that silently protects nothing; a
+ * licence-ish path no glob denies is the blind spot the shared matcher would
+ * otherwise hide. Both are printed and both fail. A glob declared
+ * `expect_match: false` is printed as DECLARED-DEFENSIVE instead — loud about
+ * being unused today, without pretending the import ships a `COPYING` file.
+ */
+export function denylistCheckCommand(baseDir: string): number {
+  const treePaths: string[] = [];
+  for (const tree of listLedgerTrees(baseDir)) {
+    const manifest = ledgerPaths(baseDir, tree).manifestUpstream;
+    if (!existsSync(manifest)) continue;
+    for (const row of readManifestFile(manifest)) treePaths.push(`vendor/${tree}/${row.path}`);
+  }
+  if (treePaths.length === 0) {
+    throw new ProvenanceError('deny-list: no imported trees', 2);
+  }
+
+  const denylist = loadDenylist();
+  try {
+    const report = assertDenylistCovers(treePaths, denylist);
+    for (const glob of report.defensive) {
+      process.stdout.write(`DECLARED-DEFENSIVE ${glob}\n`);
+    }
+    process.stdout.write(
+      `DENYLIST OK globs=${report.globs} licence_paths=${report.licencePaths}\n`,
+    );
+    return 0;
+  } catch (error) {
+    if (!(error instanceof DenylistCoverageError)) throw error;
+    for (const finding of error.findings) process.stdout.write(`${finding}\n`);
+    return 1;
+  }
+}
+
 /** Run one tree, returning the exit code it earned. */
 export function runTree(command: string, options: CliOptions, tree: string, baseDir: string): number {
   switch (command) {
@@ -291,6 +395,8 @@ export function runTree(command: string, options: CliOptions, tree: string, base
       return 0;
     case 'check-attributes':
       return checkAttributesCommand(baseDir, tree);
+    case 'license':
+      return licenseCommand(baseDir, tree);
     default:
       throw new ProvenanceError(`unknown command: ${command}`, 2);
   }
@@ -307,6 +413,10 @@ export async function main(argv: readonly string[], baseDir?: string): Promise<n
   if (options.command === 'fetch' && options.all) {
     fetchAll(root);
     return 0;
+  }
+
+  if (options.command === 'denylist-check') {
+    return denylistCheckCommand(root);
   }
 
   if (options.tree !== null) {
