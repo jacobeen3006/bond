@@ -90,6 +90,73 @@
         "github-advisory"
       ],
       "last_checked": "2026-10-25"
+    },
+    {
+      "id": "WL-OMP-RPC-WIRE",
+      "subtree": "oh-my-pi",
+      "upstream_paths": [
+        "packages/coding-agent/src/modes/rpc/rpc-types.ts",
+        "packages/coding-agent/src/modes/rpc/rpc-frame.ts",
+        "docs/rpc.md"
+      ],
+      "local_paths": [
+        "vendor/oh-my-pi/packages/coding-agent/src/modes/rpc/rpc-types.ts",
+        "vendor/oh-my-pi/packages/coding-agent/src/modes/rpc/rpc-frame.ts",
+        "vendor/oh-my-pi/docs/rpc.md"
+      ],
+      "symbols": [
+        "RpcCommand",
+        "agent_end",
+        "rpc_chunk",
+        "protocolVersion"
+      ],
+      "why": "HALO's Python adapter encodes this command and frame set; an upstream wire change is a silent contract break (BRND-04/BRND-05)",
+      "contract_tests": [
+        "tests/provenance/cve-drill.test.ts"
+      ],
+      "advisory_sources": [
+        "osv-commit",
+        "github-advisory"
+      ],
+      "last_checked": "2026-10-25"
+    },
+    {
+      "id": "WL-OMP-PROC-SPAWN",
+      "subtree": "oh-my-pi",
+      "upstream_paths": [
+        "packages/coding-agent/src/lsp/client.ts",
+        "packages/coding-agent/src/lsp/mux/server.ts",
+        "packages/coding-agent/src/dap/client.ts",
+        "packages/coding-agent/src/launch/broker.ts",
+        "packages/coding-agent/src/eval/py/kernel.ts",
+        "crates/pi-natives/src/shell.rs",
+        "crates/pi-shell/src/lib.rs"
+      ],
+      "local_paths": [
+        "vendor/oh-my-pi/packages/coding-agent/src/lsp/client.ts",
+        "vendor/oh-my-pi/packages/coding-agent/src/lsp/mux/server.ts",
+        "vendor/oh-my-pi/packages/coding-agent/src/dap/client.ts",
+        "vendor/oh-my-pi/packages/coding-agent/src/launch/broker.ts",
+        "vendor/oh-my-pi/packages/coding-agent/src/eval/py/kernel.ts",
+        "vendor/oh-my-pi/crates/pi-natives/src/shell.rs",
+        "vendor/oh-my-pi/crates/pi-shell/src/lib.rs"
+      ],
+      "symbols": [
+        "ptree.spawn",
+        "DapClient.spawn",
+        "Bun.spawn",
+        "connectSharedLspTransport",
+        "Shell.run"
+      ],
+      "why": "these sites execute untrusted input and are the highest-value CVE target in the tree (PITFALLS P-01)",
+      "contract_tests": [
+        "tests/provenance/cve-drill.test.ts"
+      ],
+      "advisory_sources": [
+        "osv-commit",
+        "github-advisory"
+      ],
+      "last_checked": "2026-10-25"
     }
   ]
 }
