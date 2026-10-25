@@ -58,6 +58,38 @@
         "github-advisory"
       ],
       "last_checked": "2026-10-25"
+    },
+    {
+      "id": "WL-HINDSIGHT-RETRIEVAL",
+      "subtree": "hindsight",
+      "upstream_paths": [
+        "hindsight-api-slim/hindsight_api/api/http.py",
+        "hindsight-api-slim/hindsight_api/engine/memories/pg/recall.py",
+        "hindsight-api-slim/hindsight_api/engine/memories/pg/retain.py",
+        "hindsight-api-slim/hindsight_api/engine/embeddings.py"
+      ],
+      "local_paths": [
+        "vendor/hindsight/hindsight-api-slim/hindsight_api/api/http.py",
+        "vendor/hindsight/hindsight-api-slim/hindsight_api/engine/memories/pg/recall.py",
+        "vendor/hindsight/hindsight-api-slim/hindsight_api/engine/memories/pg/retain.py",
+        "vendor/hindsight/hindsight-api-slim/hindsight_api/engine/embeddings.py"
+      ],
+      "symbols": [
+        "recall",
+        "retain",
+        "embed",
+        "retrieve_semantic_bm25_combined_sql",
+        "Embeddings"
+      ],
+      "why": "HALO calls Hindsight over HTTP for recall/retain; a retrieval or embedding-client change alters memory semantics and the lane SLOs",
+      "contract_tests": [
+        "tests/provenance/cve-drill.test.ts"
+      ],
+      "advisory_sources": [
+        "osv-commit",
+        "github-advisory"
+      ],
+      "last_checked": "2026-10-25"
     }
   ]
 }

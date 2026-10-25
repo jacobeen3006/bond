@@ -1,0 +1,170 @@
+{
+  "schema": "halo/paths/v1",
+  "subtree": "hindsight",
+  "resolution": "exceptions first, then longest-prefix-first, then file rules, then identity (a path matched by both a prefix rule and a file exception resolves by the exception)",
+  "rules": [
+    {
+      "kind": "prefix",
+      "from": ".claude/",
+      "to": ".claude/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": ".cursor-plugin/",
+      "to": ".cursor-plugin/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": ".githooks/",
+      "to": ".githooks/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": ".github/",
+      "to": ".github/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "cookbook/",
+      "to": "cookbook/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "docker/",
+      "to": "docker/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "helm/",
+      "to": "helm/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "hindsight-all/",
+      "to": "hindsight-all/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "hindsight-all-npm/",
+      "to": "hindsight-all-npm/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "hindsight-all-slim/",
+      "to": "hindsight-all-slim/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "hindsight-api/",
+      "to": "hindsight-api/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "hindsight-api-slim/",
+      "to": "hindsight-api-slim/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "hindsight-cli/",
+      "to": "hindsight-cli/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "hindsight-clients/",
+      "to": "hindsight-clients/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "hindsight-control-plane/",
+      "to": "hindsight-control-plane/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "hindsight-dev/",
+      "to": "hindsight-dev/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "hindsight-docs/",
+      "to": "hindsight-docs/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "hindsight-embed/",
+      "to": "hindsight-embed/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "hindsight-extensions/",
+      "to": "hindsight-extensions/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "hindsight-integration-tests/",
+      "to": "hindsight-integration-tests/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "hindsight-integrations/",
+      "to": "hindsight-integrations/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "hindsight-system-evals/",
+      "to": "hindsight-system-evals/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "hindsight-system-tests/",
+      "to": "hindsight-system-tests/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "monitoring/",
+      "to": "monitoring/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "scripts/",
+      "to": "scripts/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "skills/",
+      "to": "skills/",
+      "reason": "verbatim subtree"
+    }
+  ],
+  "exceptions": [],
+  "added": [
+    {
+      "to": "provenance/",
+      "reason": "HALO provenance record (not upstream)"
+    }
+  ]
+}

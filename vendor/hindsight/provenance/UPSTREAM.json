@@ -1,0 +1,271 @@
+{
+  "schema": "halo/upstream/v1",
+  "subtree": "hindsight",
+  "local_root": "vendor/hindsight",
+  "repo": "https://github.com/vectorize-io/hindsight.git",
+  "commit": "4822d66e093dadfd6b2b80186fd0395ef80926ca",
+  "commit_committed_at": "2026-10-24T10:21:06-04:00",
+  "default_branch": "main",
+  "tag": null,
+  "object_format": "sha1",
+  "import": {
+    "mode": "archive",
+    "date": "2026-10-25",
+    "tool": "halo-provenance/0.1.0",
+    "git_version": "2.55.0.windows.3",
+    "lfs_version": "3.7.1",
+    "staging_attributes": ".git/info/attributes",
+    "staging_attributes_value": "* -text -filter -ident -working-tree-encoding"
+  },
+  "license": {
+    "spdx": "MIT",
+    "files": [
+      {
+        "path": "LICENSE",
+        "blob": "8dce7b4d4c2632990bdf8b4101694ea19ba6ad46",
+        "sha256": "01fde0bedf83bdc185065d7af524a61690efe576a67f922eaff3a1280c17b63a"
+      }
+    ],
+    "copyright_notice_count": 3
+  },
+  "lockfiles": [
+    {
+      "path": "deno.lock",
+      "sha256": "b2e09716dda5746ff0a5111c396cfde60f445dcc98bc6ca1666ab8eca17b529a"
+    },
+    {
+      "path": "hindsight-clients/rust/Cargo.lock",
+      "sha256": "36f08ca3239e33bb83b0840860f541e81b8f247dab41e8e607858fe2b3755759"
+    },
+    {
+      "path": "hindsight-embed/hindsight_embed/control_center/ui/package-lock.json",
+      "sha256": "0804ea5a4b4c671f82a11871583a1071de980a98c0c62fb83bc1aeb458cde12f"
+    },
+    {
+      "path": "hindsight-integration-tests/uv.lock",
+      "sha256": "2dac084c9f9d7a4b7bebe3665a6f8c0635883e7319acbc56779e8d5f4ede1336"
+    },
+    {
+      "path": "hindsight-integrations/ag2/uv.lock",
+      "sha256": "ef2af90e9b83497e627e6fb3eafdf352c9e23bda9453984e5da56ffd5bc3973e"
+    },
+    {
+      "path": "hindsight-integrations/agent-framework/uv.lock",
+      "sha256": "7b60d823fc8d89326fb8996e26d1ee5fd10ab9843e3e4ebf3fe55d8f9e794ff5"
+    },
+    {
+      "path": "hindsight-integrations/agentcore/uv.lock",
+      "sha256": "af42f9174f5d332f7c19d8988fbd99e162df8a0c14d6ce6025adcff461b1cc88"
+    },
+    {
+      "path": "hindsight-integrations/agno/uv.lock",
+      "sha256": "b1914e801b2d71642c38af5be7e3b727f045b9a9569c0adc2b612d1bb7774347"
+    },
+    {
+      "path": "hindsight-integrations/ai-sdk/deno.lock",
+      "sha256": "bd09ced2c8c43dc2f1d3980aa7526c547f6a2a2c5c1bcc1b3c58db0b286f4361"
+    },
+    {
+      "path": "hindsight-integrations/ai-sdk/package-lock.json",
+      "sha256": "008cd5004e9dd0fdc7856d17efa8bdbc57da73fce47770c26fbbd1d017690708"
+    },
+    {
+      "path": "hindsight-integrations/aider/uv.lock",
+      "sha256": "04d4c000069780401af122e891e410d865af1283b974ee6bb0159c00e9388f5b"
+    },
+    {
+      "path": "hindsight-integrations/autogen/uv.lock",
+      "sha256": "788231955f114a88abb08f9829dc26fc6e3be6f12e62079abeb19852379992fb"
+    },
+    {
+      "path": "hindsight-integrations/chat/package-lock.json",
+      "sha256": "31096f4bb4ec9926caac7112df2d54126ef1484203d30033ffc684f4a6cd27db"
+    },
+    {
+      "path": "hindsight-integrations/claude-agent-sdk/uv.lock",
+      "sha256": "388d1d4aad55de1d0d58a1def854fcdf809e66c18afd5ee3b260fb16c518d36f"
+    },
+    {
+      "path": "hindsight-integrations/cloudflare-oauth-proxy/package-lock.json",
+      "sha256": "f44dd755191958ef1be99b57b48c8be8de73ed2ba855be1c2f5d6db5cf62e228"
+    },
+    {
+      "path": "hindsight-integrations/coding-agents/package-lock.json",
+      "sha256": "9521193b4fe5c248d2fb524b3e4fbad67fb11e8c51ac66f63eee6e1ff1a97846"
+    },
+    {
+      "path": "hindsight-integrations/composio/uv.lock",
+      "sha256": "391d4772cb31f69638ae51fe042ca0efc316d5840ba8ca20c7b0f172efbfe4d9"
+    },
+    {
+      "path": "hindsight-integrations/continue/uv.lock",
+      "sha256": "a0bf8324ba17226d0e4ecc2e981ed6fb45fcab3d0dc60da23b59b8fafcf96f60"
+    },
+    {
+      "path": "hindsight-integrations/crewai/uv.lock",
+      "sha256": "24ef26b613f5cda91a09b07bd48f6e7340ed6c3c4a707e53a9f89d5e25554e3f"
+    },
+    {
+      "path": "hindsight-integrations/cursor/uv.lock",
+      "sha256": "bd4ec9a0ef4da68851000c2231cb9a5355cc5dd4837257ddf8fc47663dc52da4"
+    },
+    {
+      "path": "hindsight-integrations/devin-desktop/uv.lock",
+      "sha256": "d4e59fc94ab8029fe4330649a133fb84221d318fb8609569a81b44e6b990e426"
+    },
+    {
+      "path": "hindsight-integrations/dify/uv.lock",
+      "sha256": "e9991a2e1a7cf134d4352a79aac5c747bf0411b7565a3a9db766978799bce43b"
+    },
+    {
+      "path": "hindsight-integrations/eliza/package-lock.json",
+      "sha256": "f56b9e31e3e0c5ced92f799cff9ae8eacdea782fe92ba77fc002b633f8e34222"
+    },
+    {
+      "path": "hindsight-integrations/eve/package-lock.json",
+      "sha256": "27d0473b638357b02d0c78d01434ebdc2a1393bcebf4e2f1216ca2b49335a2d3"
+    },
+    {
+      "path": "hindsight-integrations/flowise/package-lock.json",
+      "sha256": "ad8bb7b03a1c946db020e38784ed89fe6d8a96d092ce27ad2c85cd382742bdd2"
+    },
+    {
+      "path": "hindsight-integrations/gemini-spark/uv.lock",
+      "sha256": "339b729af3280ee2a5152547c6816ddc0a2a06d02d5f5662f106640e82d17336"
+    },
+    {
+      "path": "hindsight-integrations/github-copilot/uv.lock",
+      "sha256": "bf0efbb8e1538bde2b9b91b5fbe13680a4114d60d988ae36146b740858d913b8"
+    },
+    {
+      "path": "hindsight-integrations/google-adk/uv.lock",
+      "sha256": "3cd862ab74e63105b4fa9c85407ac259c913617f32cd417b6822bd4b87745caa"
+    },
+    {
+      "path": "hindsight-integrations/haystack/uv.lock",
+      "sha256": "9f7d5144da5845425563810b5645a6b33cd425ff854aab381daeaaf149689142"
+    },
+    {
+      "path": "hindsight-integrations/hermes/uv.lock",
+      "sha256": "644556c1b685944aff7c42dc1d939cb1ff2eeb1b3eb79c8022e049802cecab14"
+    },
+    {
+      "path": "hindsight-integrations/langgraph/uv.lock",
+      "sha256": "2dc26070704418d14dcf5057cd896a58b9c2b035aeb9cd6d349364ac31fbd334"
+    },
+    {
+      "path": "hindsight-integrations/litellm/uv.lock",
+      "sha256": "a7affdc4cc44fd96c3532b7493924cc9a671c55260dea6057c357eb88817a131"
+    },
+    {
+      "path": "hindsight-integrations/llamaindex/uv.lock",
+      "sha256": "a77a3f424bf6ab30d6a2fa20b993c22f2e98d78463e1c34292f734d3dfaa05ac"
+    },
+    {
+      "path": "hindsight-integrations/meta-muse/uv.lock",
+      "sha256": "39d29a533c0d4a0b5f1eb2be73151cc72cad0b09012df7c3144c6b74ed256198"
+    },
+    {
+      "path": "hindsight-integrations/n8n/package-lock.json",
+      "sha256": "3fa5bd464e2b17d65a2de244b0bfc508431c323c3a87d2ce45092889ac6b176b"
+    },
+    {
+      "path": "hindsight-integrations/nemoclaw/package-lock.json",
+      "sha256": "871e28a5dd0cb4a0c27d27115a6ba0b2df4cb1138ac37c6ae14f70557ef3ed25"
+    },
+    {
+      "path": "hindsight-integrations/obsidian/package-lock.json",
+      "sha256": "99d48196a9b03df2319508993108d9116dd645fd376256343f4e469178c3b54b"
+    },
+    {
+      "path": "hindsight-integrations/openai-agents/uv.lock",
+      "sha256": "3c7c9bbc24e0ebf39d521eab79594ca5bff47a7712350ce59c7f0065395b450a"
+    },
+    {
+      "path": "hindsight-integrations/openclaw/package-lock.json",
+      "sha256": "8a52e2e9a7923af04493b57bb592c653378b312693977eac3cc425258a1ac304"
+    },
+    {
+      "path": "hindsight-integrations/openhands/uv.lock",
+      "sha256": "5d5aef1273e5092434f4dc6a1a7d64e1e571f7c3e94326fcc9266868d664aaf8"
+    },
+    {
+      "path": "hindsight-integrations/paperclip/package-lock.json",
+      "sha256": "12f3dd5fbc68e09ec3a0b2c00db2863125a29d780b04c72249ad7709474f8bb7"
+    },
+    {
+      "path": "hindsight-integrations/pipecat/uv.lock",
+      "sha256": "14dca8cde08561bd830fe3dfdd45f74b2d08e51b25421f3f8a395c19ac52ce8a"
+    },
+    {
+      "path": "hindsight-integrations/pydantic-ai/uv.lock",
+      "sha256": "f9c487d6cc4e4e5aab5bbbaec5182444155bd897025a26a9babecd49d1d6f0aa"
+    },
+    {
+      "path": "hindsight-integrations/roo-code/uv.lock",
+      "sha256": "d6b8a05fec6996e23d23cf5ef92f39214936032f427669e8c7c1285b0ed92249"
+    },
+    {
+      "path": "hindsight-integrations/smolagents/uv.lock",
+      "sha256": "4d43dc89003015b84c0303ce3af4427ff0e7788b86106d51b49db65c03de3b4c"
+    },
+    {
+      "path": "hindsight-integrations/strands/uv.lock",
+      "sha256": "d1ddd8e826dfc7126bf62ac41c846cb160d6fb2d21d3eb2a5309f1c394848a4c"
+    },
+    {
+      "path": "hindsight-integrations/superagent/uv.lock",
+      "sha256": "68339991fdc72be10fc930fcdb288550b6a72648291f5c25029d5104de42499a"
+    },
+    {
+      "path": "hindsight-integrations/vapi/uv.lock",
+      "sha256": "ecaa8c54b29bb4acd753cd234bd2e7393ff6abdb7b00da824313760bda4e4dbf"
+    },
+    {
+      "path": "hindsight-integrations/zapier/package-lock.json",
+      "sha256": "23c31999d8dcee6bd59d4bcd17cc399840278f4922088f2386ef6ed30d933eeb"
+    },
+    {
+      "path": "hindsight-integrations/zed/package-lock.json",
+      "sha256": "dffa5c2427c1675f604a794fc71cc97f2dc78b624d1c826906ec0f25fcc67089"
+    },
+    {
+      "path": "hindsight-system-evals/uv.lock",
+      "sha256": "a2db358679e592288bef18c1a25b85436293b0d00f3d2980af5a94af5375f2aa"
+    },
+    {
+      "path": "hindsight-system-tests/uv.lock",
+      "sha256": "c3d05652607725a203f4599b8294bff85cc8c04e1b43a58227d7da5c4c654684"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "419cfba574fe6d0ee8779ceeb047622f8a9e40ccd9359680f80be20dd3ae34d4"
+    },
+    {
+      "path": "uv.lock",
+      "sha256": "89195d8bc9c5e2a580d03106521a7bc7cd14bd2a5a3a367e878f20670ac8179b"
+    }
+  ],
+  "counts": {
+    "files": 5084,
+    "bytes": 272031840,
+    "lfs_files": 0,
+    "symlinks": 0,
+    "executables": 66
+  },
+  "manifests": {
+    "upstream": "provenance/MANIFEST.upstream.tsv",
+    "upstream_sha256": "ae488a6b57a5a8d1e3e25861fe9046f09d5f9e24ca2c00a95abf1ca1fb6d4f9b",
+    "vendored": "provenance/MANIFEST.vendored.tsv",
+    "vendored_sha256": "ae488a6b57a5a8d1e3e25861fe9046f09d5f9e24ca2c00a95abf1ca1fb6d4f9b"
+  },
+  "excludes_sha256": "3b0252855919401d8c6b614af9b43bbd2758fcb2e69c962c36a7514a387e9f04",
+  "renames_sha256": "3ff76a6148d2c9b38ed80d26eea6db378f9ba589482e116ec6526b9c86e736a8",
+  "notes": {
+    "requires-python": "none (root)",
+    "requires-python-members": "hindsight-all >=3.11; hindsight-all-slim >=3.11; hindsight-api >=3.11; hindsight-api-slim >=3.11; hindsight-clients/python >=3.10; hindsight-dev >=3.11; hindsight-embed >=3.11",
+    "package-manager": "deno + npm + uv",
+    "lockfile": "deno.lock, package-lock.json, uv.lock",
+    "workspace-root": "uv workspace at repo root (members: hindsight-all, hindsight-all-slim, hindsight-api, hindsight-api-slim, hindsight-clients/python, hindsight-dev, hindsight-embed, hindsight-mcp-server); npm workspaces at repo root (hindsight-clients/typescript, hindsight-control-plane, hindsight-docs, hindsight-all-npm)"
+  }
+}

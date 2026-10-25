@@ -303,7 +303,7 @@ export function deriveTreeNotes(root: string): Record<string, string> {
           readToml(join(root, ...member.split('/'), 'pyproject.toml'))?.project,
         );
         const value = memberProject?.['requires-python'];
-        if (typeof value === 'string') declared.push(`${member}=${value}`);
+        if (typeof value === 'string') declared.push(`${member} ${value}`);
       }
       if (declared.length > 0) notes['requires-python-members'] = declared.join('; ');
     }
