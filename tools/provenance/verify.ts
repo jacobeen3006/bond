@@ -29,6 +29,7 @@
  * Exit 0 clean, 1 when any finding exists, 2 on a malformed ledger.
  */
 
+import { execFileSync } from 'node:child_process';
 import { readFileSync, existsSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
@@ -240,6 +241,31 @@ function hashLiveRow(baseDir: string, root: string, row: IndexRow): string | nul
 }
 
 /**
+ * Blob OIDs git would store for these worktree paths with the repository's
+ * attribute filters applied — the question `git status` answers. A vendored
+ * tree carries upstream's own `.gitattributes` (`*.ps1 text eol=crlf`,
+ * `*.cmd text eol=crlf`), so a fresh clone materializes CRLF bytes for an LF
+ * blob; that is git's storage contract, not a HALO edit. Chunked argv, never a
+ * shell: these paths hold spaces and non-ASCII bytes.
+ */
+function storedBlobOids(baseDir: string, repoPaths: readonly string[]): string[] {
+  const oids: string[] = [];
+  const CHUNK = 64;
+  for (let start = 0; start < repoPaths.length; start += CHUNK) {
+    const output = execFileSync(
+      'git',
+      ['hash-object', '--', ...repoPaths.slice(start, start + CHUNK)],
+      { cwd: baseDir, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 },
+    );
+    for (const line of output.split('\n')) {
+      const oid = line.trim();
+      if (oid.length > 0) oids.push(oid);
+    }
+  }
+  return oids;
+}
+
+/**
  * Verify one tree: ledger digests, then the vendored index and worktree, then
  * the unrecorded-edit detector. A tampered ledger stops before any per-file
  * comparison, so the report always names the cause rather than its effects.
@@ -350,6 +376,7 @@ export function verifyTree(baseDir: string, tree: string): VerifyResult {
   const paths = [...new Set([...manifestByPath.keys(), ...indexByPath.keys()])].sort(comparePaths);
 
   const liveRows: ManifestRow[] = [];
+  const transformSuspects: { liveIndex: number; full: string; want: ManifestRow }[] = [];
   for (const path of paths) {
     const want = manifestByPath.get(path);
     const got = indexByPath.get(path);
@@ -381,8 +408,31 @@ export function verifyTree(baseDir: string, tree: string): VerifyResult {
       continue;
     }
     // (4) Working-tree bytes, not the staged oid: an unstaged edit is exactly
-    // the drift a commit would otherwise carry silently.
-    if (sha256 !== want.sha256) findings.push(`MODIFIED ${full}`);
+    // the drift a commit would otherwise carry silently. A mismatch is held
+    // back for git's own verdict, because a checkout-time attribute transform
+    // also changes the raw bytes (see `storedBlobOids`).
+    if (sha256 === null) findings.push(`MODIFIED ${full}`);
+    else if (sha256 !== want.sha256) {
+      transformSuspects.push({ liveIndex: liveRows.length - 1, full, want });
+    }
+  }
+
+  if (transformSuspects.length > 0) {
+    let stored: string[] = [];
+    try {
+      stored = storedBlobOids(baseDir, transformSuspects.map((suspect) => suspect.full));
+    } catch {
+      stored = [];
+    }
+    for (const [index, suspect] of transformSuspects.entries()) {
+      if (stored[index] === suspect.want.oid) {
+        // The worktree holds exactly the recorded content under git's filters;
+        // recording it keeps the unrecorded-edit detector from re-reporting it.
+        liveRows[suspect.liveIndex].sha256 = suspect.want.sha256;
+      } else {
+        findings.push(`MODIFIED ${suspect.full}`);
+      }
+    }
   }
 
   // Series entries resolve against the ledger's own patches directory. A
