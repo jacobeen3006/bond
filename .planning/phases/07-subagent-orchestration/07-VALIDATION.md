@@ -43,8 +43,8 @@ created: "2026-10-25"
 | 07-01-01 | 01 | 1 | SUB-01 | — | N/A | integration | `uv run --project packages/halo_agent pytest -q packages/halo_agent/tests/subagent/test_task_spawn.py -x` | ❌ W0 | ⬜ pending |
 | 07-01-02 | 01 | 1 | SUB-01 | — | N/A | integration | `uv run --project packages/halo_agent pytest -q packages/halo_agent/tests/subagent/test_isolation.py -x` | ❌ W0 | ⬜ pending |
 | 07-01-03 | 01 | 1 | SUB-02 | T-07-01 | Child inherits parent gate state; no ungoverned child call | integration + DB-constraint | `uv run --project packages/halo_agent pytest -q packages/halo_agent/tests/subagent/test_child_governance.py -x` | ❌ W0 | ⬜ pending |
-| 07-02-01 | 02 | 2 | SUB-03 | T-07-02 | Kill leaves no orphaned process or bound port | integration | `uv run --project packages/halo_agent pytest -q packages/halo_agent/tests/subagent/test_steer_kill_restore.py -x` | ❌ W0 | ⬜ pending |
-| 07-02-02 | 02 | 2 | SUB-03 | T-07-02 | Post-kill orphan/port probe clean | integration | `uv run --project packages/halo_agent pytest -q packages/halo_agent/tests/subagent/test_orphan_cleanup.py -x` | ❌ W0 | ⬜ pending |
+| 07-02-01 | 02 | 2 | SUB-03 | T-07-05 | Kill leaves no orphaned process or bound port | integration | `uv run --project packages/halo_agent pytest -q packages/halo_agent/tests/subagent/test_steer_kill_restore.py -x` | ❌ W0 | ⬜ pending |
+| 07-02-02 | 02 | 2 | SUB-03 | T-07-05 | Post-kill orphan/port probe clean | integration | `uv run --project packages/halo_agent pytest -q packages/halo_agent/tests/subagent/test_orphan_cleanup.py -x` | ❌ W0 | ⬜ pending |
 | 07-03-01 | 03 | 3 | SUB-04 | — | N/A | integration | `uv run --project packages/halo_agent pytest -q packages/halo_agent/tests/subagent/test_concurrency_cap.py -x` | ❌ W0 | ⬜ pending |
 | 07-03-02 | 03 | 3 | SUB-04 | — | N/A | integration + DB-constraint | `uv run --project packages/halo_agent pytest -q packages/halo_agent/tests/subagent/test_cost_rollup.py -x` | ❌ W0 | ⬜ pending |
 
