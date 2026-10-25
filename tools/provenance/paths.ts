@@ -1,13 +1,19 @@
 /**
  * Path gate — the single pre-extraction safety checker for the provenance tool.
  *
- * `assertSafeArchiveEntries` is called on the `tar -tf` listing BEFORE `tar -x`
- * runs, because a `..` member overwrites files outside the target before any
- * post-hoc check could see it.
+ * There are two entry points and one normalizer:
  *
- * Plan 01-02 extends this module with the Windows-representability findings
- * (reserved names, case collisions, trailing dot/space, length). It must not
- * create a second path checker.
+ * - `assertSafeArchiveEntries` is the extraction-time hard stop. It is called
+ *   on the `tar -tf` listing BEFORE `tar -x` runs, because a `..` member
+ *   overwrites files outside the target before any post-hoc check could see it.
+ * - `validateTreePaths` classifies a whole tree (from `git ls-tree`) and
+ *   returns findings instead of throwing. It adds the Windows-representability
+ *   classes to the same escape classes, so a case collision, a reserved device
+ *   name, a trailing dot/space or an over-long path is refused before a single
+ *   file is written to `vendor/`.
+ *
+ * Both entry points classify through `normalizeArchivePath`, so they can never
+ * disagree about what counts as an escape.
  */
 
 export type PathFindingKind =
@@ -16,12 +22,16 @@ export type PathFindingKind =
   | 'unc'
   | 'ads'
   | 'backslash'
-  | 'empty-segment';
+  | 'empty-segment'
+  | 'reserved-name'
+  | 'trailing-dot-space'
+  | 'case-collision'
+  | 'too-long';
 
-export type PathFinding = {
+export type Finding = {
   kind: PathFindingKind;
   path: string;
-  segment?: string;
+  detail: string;
 };
 
 /** The shared typed CLI error. `code` is the process exit code the CLI must use. */
@@ -38,53 +48,80 @@ export class ProvenanceError extends Error {
 export class PathGateError extends ProvenanceError {
   readonly kind: PathFindingKind;
   readonly path: string;
-  readonly segment?: string;
+  readonly detail: string;
 
-  constructor(finding: PathFinding) {
+  constructor(finding: Finding) {
     super(`unsafe archive path: ${finding.path}`, 2);
     this.name = 'PathGateError';
     this.kind = finding.kind;
     this.path = finding.path;
-    this.segment = finding.segment;
+    this.detail = finding.detail;
   }
 }
 
 /**
- * Classify one path. Returns null when the path is relative, POSIX-separated,
- * free of `..`, `:` and `\\`, and has no empty segment.
- *
- * A leading `./` is stripped first; a single trailing `/` (directory entry as
- * printed by `tar -tf`) is ignored.
+ * `CON`, `PRN`, `AUX`, `NUL`, `COM1`–`COM9`, `LPT1`–`LPT9`, matched on the
+ * segment's stem (the part before the first dot) so `NUL.tar.gz` is caught and
+ * `CONTRACT.md` is not.
  */
-export function inspectUnsafePath(rawPath: string): PathFinding | null {
+const RESERVED_DEVICE_NAMES = new Set([
+  'CON',
+  'PRN',
+  'AUX',
+  'NUL',
+  ...Array.from({ length: 9 }, (_, index) => `COM${index + 1}`),
+  ...Array.from({ length: 9 }, (_, index) => `LPT${index + 1}`),
+]);
+
+export const DEFAULT_MAX_VENDORED_PATH_LENGTH = 240;
+
+type NormalizedPath =
+  | { ok: true; path: string; segments: string[] }
+  | { ok: false; finding: Finding };
+
+/**
+ * The one normalization function. A leading `./` is stripped, a single
+ * trailing `/` (directory entry as printed by `tar -tf`) is ignored, and every
+ * escape class is rejected: UNC, absolute, drive-letter, backslash, ADS `:`,
+ * empty segment and `..`.
+ */
+function normalizeArchivePath(rawPath: string): NormalizedPath {
+  const reject = (kind: PathFindingKind, detail: string): NormalizedPath => ({
+    ok: false,
+    finding: { kind, path: String(rawPath), detail },
+  });
+
   if (typeof rawPath !== 'string' || rawPath.length === 0) {
-    return { kind: 'empty-segment', path: String(rawPath) };
+    return reject('empty-segment', 'empty path');
   }
 
   let path = rawPath;
   while (path.startsWith('./')) path = path.slice(2);
-  if (path.length === 0) return { kind: 'empty-segment', path: rawPath };
+  if (path.length === 0) return reject('empty-segment', 'path is only ./ prefixes');
 
-  if (path.startsWith('//')) return { kind: 'unc', path: rawPath };
-  if (path.startsWith('/')) return { kind: 'absolute', path: rawPath };
-  if (/^[A-Za-z]:/.test(path)) return { kind: 'absolute', path: rawPath };
-  if (path.includes('\\')) return { kind: 'backslash', path: rawPath };
-  if (path.includes(':')) return { kind: 'ads', path: rawPath };
+  if (path.startsWith('//')) return reject('unc', 'UNC path');
+  if (path.startsWith('/')) return reject('absolute', 'absolute POSIX path');
+  if (/^[A-Za-z]:/.test(path)) return reject('absolute', 'drive-letter path');
+  if (path.includes('\\')) return reject('backslash', 'backslash separator');
+  if (path.includes(':')) return reject('ads', 'colon (alternate data stream)');
 
   let body = path;
   if (body.endsWith('/')) body = body.slice(0, -1);
-  if (body.length === 0) return { kind: 'empty-segment', path: rawPath };
+  if (body.length === 0) return reject('empty-segment', 'empty path after trailing slash');
 
-  for (const segment of body.split('/')) {
-    if (segment.length === 0) {
-      return { kind: 'empty-segment', path: rawPath, segment };
-    }
-    if (segment === '..') {
-      return { kind: 'traversal', path: rawPath, segment };
-    }
+  const segments = body.split('/');
+  for (const segment of segments) {
+    if (segment.length === 0) return reject('empty-segment', 'empty path segment');
+    if (segment === '..') return reject('traversal', 'parent-directory segment');
   }
 
-  return null;
+  return { ok: true, path: body, segments };
+}
+
+/** Classify one path for the extraction-time escape classes. */
+export function inspectUnsafePath(rawPath: string): Finding | null {
+  const normalized = normalizeArchivePath(rawPath);
+  return normalized.ok ? null : normalized.finding;
 }
 
 /** Throw `PathGateError` on the first unsafe entry. Leaves the target untouched. */
@@ -93,6 +130,83 @@ export function assertSafeArchiveEntries(entries: readonly string[]): void {
     const finding = inspectUnsafePath(entry);
     if (finding) throw new PathGateError(finding);
   }
+}
+
+export type ValidateTreeOptions = {
+  /** Maximum length of `prefix + relativePath`; defaults to 240. */
+  maxLength?: number;
+  /** Local mount prefix, e.g. `vendor/<tree>/`. Defaults to the empty string. */
+  prefix?: string;
+};
+
+/**
+ * Classify every path in a tree. Returns findings and never throws.
+ *
+ * Length is measured on the full vendored path (`prefix + relative path`),
+ * because that is the path NTFS must hold. `detail` always carries the
+ * measured length so a refusal is actionable.
+ */
+export function validateTreePaths(
+  paths: readonly string[],
+  options: ValidateTreeOptions = {},
+): Finding[] {
+  const maxLength = options.maxLength ?? DEFAULT_MAX_VENDORED_PATH_LENGTH;
+  const prefix = options.prefix ?? '';
+  const findings: Finding[] = [];
+  const caseGroups = new Map<string, string[]>();
+
+  for (const rawPath of paths) {
+    const normalized = normalizeArchivePath(rawPath);
+    if (!normalized.ok) {
+      findings.push(normalized.finding);
+      continue;
+    }
+
+    for (const segment of normalized.segments) {
+      const stem = segment.split('.')[0].toUpperCase();
+      if (RESERVED_DEVICE_NAMES.has(stem)) {
+        findings.push({
+          kind: 'reserved-name',
+          path: rawPath,
+          detail: `reserved Windows device name: ${segment}`,
+        });
+      }
+      if (/[. ]$/.test(segment)) {
+        findings.push({
+          kind: 'trailing-dot-space',
+          path: rawPath,
+          detail: `component ends with ${segment.endsWith('.') ? 'a dot' : 'a space'}: ${segment}`,
+        });
+      }
+    }
+
+    const measured = `${prefix}${normalized.path}`.length;
+    if (measured > maxLength) {
+      findings.push({
+        kind: 'too-long',
+        path: rawPath,
+        detail: `length ${measured} exceeds ${maxLength}`,
+      });
+    }
+
+    const key = normalized.path.toLowerCase();
+    const group = caseGroups.get(key);
+    if (group) group.push(rawPath);
+    else caseGroups.set(key, [rawPath]);
+  }
+
+  for (const group of caseGroups.values()) {
+    if (group.length < 2) continue;
+    for (const rawPath of group) {
+      findings.push({
+        kind: 'case-collision',
+        path: rawPath,
+        detail: `case-insensitive collision: ${group.join(' and ')}`,
+      });
+    }
+  }
+
+  return findings;
 }
 
 /** Split a `tar -tf` listing into entries, tolerating CRLF line endings. */
