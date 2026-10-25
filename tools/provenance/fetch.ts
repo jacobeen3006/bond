@@ -32,9 +32,12 @@ export const DEFAULT_BRANCH = 'main';
 const MAX_BUFFER = 512 * 1024 * 1024;
 
 /**
- * Every git invocation in the tool is CRLF-neutral. This machine's system
- * config sets `core.autocrlf=true`, and `git archive` applies it to the tar it
- * writes, which would rewrite every imported byte (research P1). The staging
+ * Every git invocation in the tool is CRLF- and filter-neutral. This machine's
+ * system config sets `core.autocrlf=true`, and `git archive` applies it to the
+ * tar it writes, which would rewrite every imported byte (research P1). A
+ * committed `.gitattributes` can likewise name the `lfs` driver, and `git
+ * archive` would then run `git lfs smudge` and either fetch over the network or
+ * fail — both are byte rewrites the import must never allow. The staging
  * attributes are the second belt; this is the first.
  */
 const NEUTRAL_CONFIG = [
@@ -44,6 +47,14 @@ const NEUTRAL_CONFIG = [
   'core.eol=lf',
   '-c',
   'core.safecrlf=false',
+  '-c',
+  'filter.lfs.clean=cat',
+  '-c',
+  'filter.lfs.smudge=cat',
+  '-c',
+  'filter.lfs.process=',
+  '-c',
+  'filter.lfs.required=false',
 ];
 
 export function git(args: string[], cwd: string, stdin?: string): string {

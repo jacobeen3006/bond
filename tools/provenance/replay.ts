@@ -37,6 +37,7 @@ import {
   readTreeRows,
   repairModesAt,
   STAGING_ATTRIBUTES_VALUE,
+  TAR_UTF8_OPTIONS,
 } from './stage';
 
 const MAX_BUFFER = 512 * 1024 * 1024;
@@ -185,7 +186,7 @@ export function replayTree(baseDir: string, tree: string): ReplayResult {
       maxBuffer: MAX_BUFFER,
     });
     assertSafeArchiveEntries(parseTarListing(listing));
-    execFileSync('tar', ['-xf', tarPath, '-C', work], {
+    execFileSync('tar', ['-xf', tarPath, '-C', work, ...TAR_UTF8_OPTIONS], {
       encoding: 'utf8',
       maxBuffer: MAX_BUFFER,
     });
