@@ -1,0 +1,30 @@
+#!/bin/sh
+# halo provenance gate — the same offline check CI runs.
+#
+# Install once per clone:
+#   git config --local core.hooksPath .githooks
+#
+# The gate reads the ledger, the index and the working tree. It never contacts
+# a remote, never restages anything and never runs replay: a hook that needs the
+# gitignored upstream cache is a hook people disable (DEC-02). Replay stays the
+# deliberate, expensive act it is (`just provenance-replay`).
+#
+# Cost is paid only by commits that touch a vendored tree or a ledger path:
+# everything else exits before the checker starts.
+set -u
+
+root=$(git rev-parse --show-toplevel) || exit 1
+cd "$root" || exit 1
+
+staged=$(git diff --cached --name-only --diff-filter=ACMRTD -- vendor provenance)
+if [ -z "$staged" ]; then
+  exit 0
+fi
+
+if ! command -v bun >/dev/null 2>&1; then
+  echo "pre-commit: bun is required to verify the provenance ledger" >&2
+  exit 1
+fi
+
+# Findings are printed verbatim by the checker; the commit fails on its exit 1.
+exec bun run tools/provenance/verify.ts --all
