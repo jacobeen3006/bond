@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://halo.local/provenance/denylist.schema.json",
+  "title": "HALO rebrand deny-list",
+  "description": "Path globs, manifest field names and JSON pointer prefixes that any rebrand rewriter must skip, plus the paths no tool may write at all. Consumed by shouldRewrite() before a rewrite runs — never used as a content heuristic afterwards.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "globs", "fields", "field_pointers", "paths_never_written"],
+  "properties": {
+    "schema": { "const": "halo/denylist/v1" },
+    "version": { "type": "integer", "minimum": 1 },
+    "comment": { "type": "string", "minLength": 1 },
+    "globs": {
+      "type": "array",
+      "minItems": 6,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["glob", "reason"],
+        "properties": {
+          "glob": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Glob over 'vendor/<tree>/<path>'; '*' never crosses '/', '**/' matches zero or more directories, and '-'/'_' are equivalent on both sides."
+          },
+          "reason": { "type": "string", "minLength": 1 },
+          "expect_match": {
+            "type": "boolean",
+            "description": "True (default) means the glob must match at least one imported path — an unmatched one is a dead guard and fails denylist-check. False declares a defensive spelling that may match nothing today."
+          }
+        }
+      }
+    },
+    "fields": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Manifest field names rejected regardless of file path.",
+      "items": { "type": "string", "pattern": "^[a-z][a-z0-9_.-]*$" }
+    },
+    "field_pointers": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Longer JSON pointer prefixes where attribution may appear, e.g. package.json#author.",
+      "items": { "type": "string", "pattern": "^[^#]+#[A-Za-z0-9_.-]+$" }
+    },
+    "paths_never_written": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["glob", "reason"],
+        "properties": {
+          "glob": { "type": "string", "minLength": 1 },
+          "reason": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}

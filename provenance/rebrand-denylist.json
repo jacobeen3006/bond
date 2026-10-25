@@ -1,0 +1,51 @@
+{
+  "schema": "halo/denylist/v1",
+  "version": 1,
+  "comment": "The rebrand contract. Phase 2's rewriter MUST consult shouldRewrite(path, fieldPointer) before touching anything; a match here means the bytes carry an upstream author's attribution and a bulk replacement would destroy it (PITFALLS P-02). Every glob is matched case-insensitively over 'vendor/<tree>/<path>', with '-' and '_' treated as equivalent.",
+  "globs": [
+    {
+      "glob": "**/LICENSE*",
+      "reason": "MIT permission text and the copyright holder line",
+      "expect_match": true
+    },
+    {
+      "glob": "**/NOTICE*",
+      "reason": "attribution notice shipped beside a licence",
+      "expect_match": true
+    },
+    {
+      "glob": "**/COPYRIGHT*",
+      "reason": "bare copyright statement as its own file (defensive: no imported tree ships one today)",
+      "expect_match": false
+    },
+    {
+      "glob": "**/COPYING*",
+      "reason": "GPL-style licence file name (defensive: no imported tree ships one today)",
+      "expect_match": false
+    },
+    {
+      "glob": "**/THIRD_PARTY*",
+      "reason": "third-party notices, underscore spelling; '-' and '_' are equivalent so this also covers oh-my-pi's THIRD-PARTY-NOTICES.txt",
+      "expect_match": true
+    },
+    {
+      "glob": "**/THIRD-PARTY*",
+      "reason": "third-party notices, hyphen spelling — the one oh-my-pi actually ships",
+      "expect_match": true
+    }
+  ],
+  "fields": ["copyright", "license", "licenses", "authors"],
+  "field_pointers": [
+    "package.json#author",
+    "package.json#contributors",
+    "Cargo.toml#package.authors",
+    "pyproject.toml#project.authors",
+    "pyproject.toml#tool.poetry.authors"
+  ],
+  "paths_never_written": [
+    {
+      "glob": "vendor/**/provenance/**",
+      "reason": "the ledger records upstream bytes; a rebrand pass rewriting it would destroy the evidence it exists to hold (DEC-05)"
+    }
+  ]
+}
