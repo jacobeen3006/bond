@@ -242,7 +242,12 @@ Plans:
   3. A user can steer, kill and restore a child session, and a killed child leaves no orphaned process or bound port (SUB-03).
   4. Concurrency caps and per-child cost accounting appear in the session record (SUB-04).
 
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 07-01-PLAN.md — Seam re-validation + end-to-end subagent tracer (task spawns a governed child, runs one turn, returns a typed result)
+- [ ] 07-02-PLAN.md — Control: steer, kill, restore a child session; a killed child leaves no orphaned process or bound port
+- [ ] 07-03-PLAN.md — Concurrency cap (3 concurrent, depth 2) + per-child cost rollup over session_model_usage
 
 ### Phase 8: Memory Runtime & Bundling
 
@@ -257,7 +262,13 @@ Plans:
   4. Hindsight API and worker run embedded with per-operation LLM configuration, and the degraded-mode fallback is documented as a recorded decision (MEM-04).
   5. Retain is idempotent via `operation_id` with transactional boundaries and a startup repair job, so a cancelled retain never leaves an unretrievable memory (MEM-06).
 
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [ ] 08-01-PLAN.md — End-to-end memory service boot tracer (PG cluster + pgvector gate + embedder + embedded Hindsight + one retain landing a vector row) + test-harness wiring
+- [ ] 08-02-PLAN.md — pgvector CI build (build-pgvector.ps1 + build-pgvector.yml, pg_regress gate, SHA-256 manifest) + version-gate test (mismatch fails startup with actionable message)
+- [ ] 08-03-PLAN.md — Sidecar supervision: reranker + restart/backoff + hardware-profile flags on ephemeral ports
+- [ ] 08-04-PLAN.md — Hindsight embedded-shape + per-op env + recorded degraded decision (MEM-04) + retain idempotency via operation_id + recover_own_tasks repair (MEM-06)
 
 ### Phase 9: Four-Lane Scheduling & Lane SLOs
 
