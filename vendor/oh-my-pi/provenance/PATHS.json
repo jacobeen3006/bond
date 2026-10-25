@@ -1,0 +1,110 @@
+{
+  "schema": "halo/paths/v1",
+  "subtree": "oh-my-pi",
+  "resolution": "exceptions first, then longest-prefix-first, then file rules, then identity (a path matched by both a prefix rule and a file exception resolves by the exception)",
+  "rules": [
+    {
+      "kind": "prefix",
+      "from": ".cargo/",
+      "to": ".cargo/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": ".config/",
+      "to": ".config/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": ".github/",
+      "to": ".github/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": ".omp/",
+      "to": ".omp/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "assets/",
+      "to": "assets/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "bazel/",
+      "to": "bazel/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "crates/",
+      "to": "crates/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "docs/",
+      "to": "docs/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "infra/",
+      "to": "infra/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "nix/",
+      "to": "nix/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "packages/",
+      "to": "packages/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "patches/",
+      "to": "patches/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "python/",
+      "to": "python/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "scripts/",
+      "to": "scripts/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "sdk/",
+      "to": "sdk/",
+      "reason": "verbatim subtree"
+    },
+    {
+      "kind": "prefix",
+      "from": "types/",
+      "to": "types/",
+      "reason": "verbatim subtree"
+    }
+  ],
+  "exceptions": [],
+  "added": [
+    {
+      "to": "provenance/",
+      "reason": "HALO provenance record (not upstream)"
+    }
+  ]
+}

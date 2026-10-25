@@ -1,0 +1,7 @@
+{
+  "schema": "halo/renames/v1",
+  "subtree": "oh-my-pi",
+  "generated_from": "brand.json",
+  "phase_populated": 2,
+  "rules": []
+}

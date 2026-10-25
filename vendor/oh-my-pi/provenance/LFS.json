@@ -1,0 +1,8 @@
+{
+  "schema": "halo/lfs/v1",
+  "subtree": "oh-my-pi",
+  "tracked": [],
+  "upstream_gitattributes_lfs_lines": [
+    "*.wasm filter=lfs diff=lfs merge=lfs -text linguist-vendored"
+  ]
+}

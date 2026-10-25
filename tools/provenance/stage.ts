@@ -401,6 +401,196 @@ export function checkAttributes(
   return { ok: mismatches.length === 0, mismatches };
 }
 
+export const LFS_VERSION_LINE = 'version https://git-lfs.github.com/spec/v1';
+export const LFS_POINTER_MAX_BYTES = 1024;
+
+export type LfsRecord = {
+  path: string;
+  oid: string;
+  size: number;
+  pointer_verified: boolean;
+  object_verified: boolean;
+};
+
+export type LfsInventory = { tracked: LfsRecord[]; lines: string[] };
+
+/**
+ * The canonical pointer grammar: version line, `oid sha256:<64 hex>`, `size
+ * <decimal>`, nothing over 1024 bytes. A blob that does not parse is not a
+ * pointer — which is exactly the distinction a smudged payload erases.
+ */
+export function pointerFields(bytes: Buffer): { oid: string; size: number } | null {
+  if (bytes.length === 0 || bytes.length >= LFS_POINTER_MAX_BYTES) return null;
+  const lines = bytes.toString('utf8').split(/\r?\n/);
+  if (lines[0] !== LFS_VERSION_LINE) return null;
+  const oid = /^oid sha256:([0-9a-f]{64})$/.exec(lines[1] ?? '');
+  const size = /^size ([0-9]+)$/.exec(lines[2] ?? '');
+  if (oid === null || size === null) return null;
+  return { oid: `sha256:${oid[1]}`, size: Number(size[1]) };
+}
+
+/** One `git cat-file --batch` for a set of OIDs; absent objects are omitted. */
+function readBlobs(cache: string, oids: readonly string[]): Map<string, Buffer> {
+  const byOid = new Map<string, Buffer>();
+  if (oids.length === 0) return byOid;
+  const output = execFileSync('git', ['cat-file', '--batch'], {
+    cwd: cache,
+    input: `${oids.join('\n')}\n`,
+    maxBuffer: MAX_BUFFER,
+  });
+  let offset = 0;
+  while (offset < output.length) {
+    const headerEnd = output.indexOf(0x0a, offset);
+    if (headerEnd === -1) break;
+    const header = output.subarray(offset, headerEnd).toString('utf8').split(' ');
+    const size = Number(header[2]);
+    if (header[1] !== 'blob' || !Number.isFinite(size)) break;
+    const start = headerEnd + 1;
+    byOid.set(header[0], output.subarray(start, start + size));
+    offset = start + size + 1;
+  }
+  return byOid;
+}
+
+type LfsLsEntry = { path: string; oid: string; size: number };
+
+/** `git lfs ls-files <sha> --json`; `null` when git-lfs itself cannot answer. */
+function readLfsLsFiles(cache: string, sha: string): LfsLsEntry[] | null {
+  let raw: string;
+  try {
+    raw = git(['lfs', 'ls-files', sha, '--json', '--long', '--size'], cache);
+  } catch {
+    return null;
+  }
+  const parsed = JSON.parse(raw) as { files?: unknown };
+  if (!Array.isArray(parsed.files)) return [];
+  const entries: LfsLsEntry[] = [];
+  for (const item of parsed.files) {
+    if (typeof item !== 'object' || item === null) continue;
+    const record = item as Record<string, unknown>;
+    const { name, oid, size } = record;
+    if (typeof name !== 'string' || typeof oid !== 'string' || typeof size !== 'number') continue;
+    const algorithm = typeof record.oid_type === 'string' ? record.oid_type : 'sha256';
+    entries.push({
+      path: name,
+      oid: oid.includes(':') ? oid : `${algorithm}:${oid}`,
+      size,
+    });
+  }
+  return entries;
+}
+
+/** True when the payload was fetched into the cache (never into `vendor/`). */
+function lfsObjectPresent(cache: string, oid: string): boolean {
+  const [algorithm, digest] = oid.split(':');
+  if (algorithm !== 'sha256' || digest === undefined || !/^[0-9a-f]{64}$/.test(digest)) {
+    return false;
+  }
+  return existsSync(
+    join(cache, 'lfs', 'objects', digest.slice(0, 2), digest.slice(2, 4), digest.slice(4)),
+  );
+}
+
+/**
+ * `LFS.json` (IMPT-06): the pointers upstream committed, as pointers.
+ *
+ * The inventory is derived from the tree's own blobs — never from a checkout,
+ * which may have been smudged — and cross-checked against
+ * `git lfs ls-files --json`, so a path upstream declares as LFS but whose bytes
+ * are a payload is a hard failure rather than a silently empty list.
+ */
+export function emitLfsInventory(
+  baseDir: string,
+  tree: string,
+  cache: string,
+  sha: string,
+  targetRoot: string,
+  rows: readonly TreeRow[],
+): LfsInventory {
+  const attributeRows = rows.filter((row) => row.path.split('/').pop() === '.gitattributes');
+  const attributeBlobs = readBlobs(
+    cache,
+    attributeRows.map((row) => row.oid),
+  );
+  const lines: string[] = [];
+  for (const row of attributeRows) {
+    const bytes = attributeBlobs.get(row.oid);
+    if (bytes === undefined) {
+      throw new ProvenanceError(`unreadable attributes: ${row.path}`, 1);
+    }
+    for (const line of bytes.toString('utf8').split(/\r?\n/)) {
+      if (line.includes('filter=lfs') && !lines.includes(line)) lines.push(line);
+    }
+  }
+
+  const candidates = rows.filter((row) => row.size > 0 && row.size < LFS_POINTER_MAX_BYTES);
+  const blobs = readBlobs(
+    cache,
+    candidates.map((row) => row.oid),
+  );
+  const tracked: LfsRecord[] = [];
+  for (const row of candidates) {
+    const bytes = blobs.get(row.oid);
+    if (bytes === undefined) continue;
+    const fields = pointerFields(bytes);
+    if (fields === null) continue;
+    const diskPath = join(targetRoot, ...row.path.split('/'));
+    const onDisk = existsSync(diskPath) ? pointerFields(readFileSync(diskPath)) : null;
+    if (onDisk === null || onDisk.oid !== fields.oid || onDisk.size !== fields.size) {
+      throw new ProvenanceError(`lfs pointer mismatch: ${row.path}`, 1);
+    }
+    tracked.push({
+      path: row.path,
+      oid: fields.oid,
+      size: fields.size,
+      pointer_verified: true,
+      object_verified: lfsObjectPresent(cache, fields.oid),
+    });
+  }
+  tracked.sort((a, b) => comparePaths(a.path, b.path));
+
+  const declared = readLfsLsFiles(cache, sha);
+  if (declared === null) {
+    process.stdout.write(`LFS CROSSCHECK SKIPPED ${tree} (git-lfs unavailable)\n`);
+  } else {
+    const declaredByPath = new Map(declared.map((entry) => [entry.path, entry]));
+    for (const entry of declared) {
+      const record = tracked.find((item) => item.path === entry.path);
+      if (record === undefined) {
+        throw new ProvenanceError(
+          `lfs declaration is not a pointer: ${entry.path} (payload in tree)`,
+          1,
+        );
+      }
+      if (record.oid !== entry.oid || record.size !== entry.size) {
+        throw new ProvenanceError(`lfs pointer disagrees with git-lfs: ${entry.path}`, 1);
+      }
+    }
+    for (const record of tracked) {
+      if (!declaredByPath.has(record.path)) {
+        throw new ProvenanceError(`lfs pointer not declared: ${record.path}`, 1);
+      }
+    }
+  }
+
+  if (lines.length === 0 && tracked.length === 0) return { tracked, lines };
+
+  const file = join(ledgerPaths(baseDir, tree).dir, 'LFS.json');
+  ensureDir(path.dirname(file));
+  writeFileSync(
+    file,
+    serializeLedger({
+      schema: 'halo/lfs/v1',
+      subtree: tree,
+      tracked,
+      upstream_gitattributes_lfs_lines: lines,
+    }),
+    'utf8',
+  );
+  process.stdout.write(`LFS ${tree} tracked=${tracked.length}\n`);
+  return { tracked, lines };
+}
+
 /** The one vendored-manifest producer (used by import, restage and replay). */
 export function vendoredManifestRows(baseDir: string, tree: string): ManifestRow[] {
   const rows = readIndexRowsAt(baseDir, `vendor/${tree}`).filter(
@@ -583,6 +773,8 @@ export function importFromCache(
     );
   }
 
+  const lfs = emitLfsInventory(baseDir, tree, cache, sha, targetRoot, treeRows);
+
   ensureDir(ledger.dir);
 
   const blobDigests = hashBlobs(
@@ -652,7 +844,7 @@ export function importFromCache(
     counts: {
       files,
       bytes,
-      lfs_files: 0,
+      lfs_files: lfs.tracked.length,
       symlinks: treeRows.filter((row) => row.mode === '120000').length,
       executables: treeRows.filter((row) => row.mode === '100755').length,
     },

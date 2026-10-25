@@ -285,6 +285,10 @@ export function deriveTreeNotes(root: string): Record<string, string> {
   const notes: Record<string, string> = {};
   const pyproject = readToml(join(root, 'pyproject.toml'));
   const pkg = readJsonObject(join(root, 'package.json'));
+  const cargo = readToml(join(root, 'Cargo.toml'));
+  const cargoWorkspace = asRecord(cargo?.workspace);
+  const npmWorkspaceObject = asRecord(pkg?.workspaces);
+  const bazelModule = existsSync(join(root, 'MODULE.bazel'));
 
   const project = asRecord(pyproject?.project);
   const uv = asRecord(asRecord(pyproject?.tool)?.uv);
@@ -323,6 +327,10 @@ export function deriveTreeNotes(root: string): Record<string, string> {
   }
   if (uv !== null) managers.add('uv');
   if (managers.size > 0) notes['package-manager'] = [...managers].sort(comparePaths).join(' + ');
+  const packageManager = pkg?.packageManager;
+  if (typeof packageManager === 'string' && packageManager.length > 0) {
+    notes.package_manager = packageManager;
+  }
   if (rootNames.length > 0) notes.lockfile = rootNames.join(', ');
 
   const workspace: string[] = [];
@@ -336,6 +344,27 @@ export function deriveTreeNotes(root: string): Record<string, string> {
     workspace.push(`npm workspaces at repo root (${npmWorkspaces.join(', ')})`);
   }
   notes['workspace-root'] = workspace.length > 0 ? workspace.join('; ') : 'none';
+
+  // Every build graph an import must never absorb: each is named by the file
+  // and table that declares it, so a root workspace capturing this subtree is
+  // detectable from the ledger alone (T-1-22).
+  const roots: string[] = [];
+  if (npmWorkspaceObject !== null) {
+    const patterns = asStringArray(npmWorkspaceObject.packages).sort(comparePaths);
+    roots.push(
+      `package.json#workspaces (object form${patterns.length > 0 ? `: ${patterns.join(', ')}` : ''})`,
+    );
+  }
+  if (cargoWorkspace !== null) {
+    const cargoMembers = asStringArray(cargoWorkspace.members).sort(comparePaths);
+    roots.push(
+      `Cargo.toml#[workspace]${
+        cargoMembers.length > 0 ? ` (members: ${cargoMembers.join(', ')})` : ''
+      }`,
+    );
+  }
+  if (bazelModule) roots.push('MODULE.bazel');
+  if (roots.length > 0) notes.workspace_roots = roots.join(', ');
 
   return notes;
 }

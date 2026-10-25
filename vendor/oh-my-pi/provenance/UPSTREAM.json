@@ -1,0 +1,95 @@
+{
+  "schema": "halo/upstream/v1",
+  "subtree": "oh-my-pi",
+  "local_root": "vendor/oh-my-pi",
+  "repo": "https://github.com/can1357/oh-my-pi.git",
+  "commit": "0b5c27ab24719c86a5986b95ee55f4e75bc1aaa0",
+  "commit_committed_at": "2026-10-22T12:22:25+02:00",
+  "default_branch": "main",
+  "tag": null,
+  "object_format": "sha1",
+  "import": {
+    "mode": "archive",
+    "date": "2026-10-25",
+    "tool": "halo-provenance/0.1.0",
+    "git_version": "2.55.0.windows.3",
+    "lfs_version": "3.7.1",
+    "staging_attributes": ".git/info/attributes",
+    "staging_attributes_value": "* -text -filter -ident -working-tree-encoding"
+  },
+  "license": {
+    "spdx": "MIT",
+    "files": [
+      {
+        "path": "LICENSE",
+        "blob": "09a0c6c926a81c9d56dc3326cff1e5358c63c6d6",
+        "sha256": "16c45f9d667442781f03fa198914cc39abcaa48ec5ed8f644643e554ca2fbf63"
+      }
+    ],
+    "copyright_notice_count": 5
+  },
+  "lockfiles": [
+    {
+      "path": ".omp/tools/bun.lock",
+      "sha256": "4f01a80e6de9d8ed6468a3cdc96ab143bbfd9e5f8e0e8b2acf8130917870173c"
+    },
+    {
+      "path": "Cargo.lock",
+      "sha256": "7ad6fbbfbc0c7e349b3914f4742dcfd7380d5ccca1f92a2cebd245bcd5be8312"
+    },
+    {
+      "path": "MODULE.bazel.lock",
+      "sha256": "ed72c69660f4497136fbae7ecf82a25ea715959678271cbf17b4b32c9e9bf8e6"
+    },
+    {
+      "path": "bun.lock",
+      "sha256": "6e330e18ca780dfccd6b6161818c204155f4c2cefce482bfead3e8315406a048"
+    },
+    {
+      "path": "crates/pi-builtins/Cargo.lock",
+      "sha256": "0282779ce1b725bc276009e1dab5ae1a34e039d14bf9858b34a4e7313cc68272"
+    },
+    {
+      "path": "crates/vendor/brush-core/Cargo.lock",
+      "sha256": "98a8da72ce7287e87c4a0817804f9aa135c334bb03c5735b237000b83a6fa5a5"
+    },
+    {
+      "path": "flake.lock",
+      "sha256": "721cba034097a5ef14811978d23f630e132ff04b1ff29ff2812dd2f6289c5539"
+    },
+    {
+      "path": "packages/coding-agent/examples/extensions/with-deps/package-lock.json",
+      "sha256": "192e559d51f7a835fdd616a651a978ceb324704e83f19849af14f39e64ae199f"
+    },
+    {
+      "path": "sdk/python/omp-rpc/uv.lock",
+      "sha256": "17c6bd11a44219d42ff0fa875f6f2f1f1395875a7f175baca43d107ea498b8aa"
+    },
+    {
+      "path": "sdk/rust/omp-rpc/Cargo.lock",
+      "sha256": "3f54c1acbec8aa028bc160c842f8445902da49b6af509945cb3a4c4631c46827"
+    }
+  ],
+  "counts": {
+    "files": 9303,
+    "bytes": 213301894,
+    "lfs_files": 0,
+    "symlinks": 0,
+    "executables": 91
+  },
+  "manifests": {
+    "upstream": "provenance/MANIFEST.upstream.tsv",
+    "upstream_sha256": "47c81eac1143c32e677999c39f7f5aed5f04998146f4d1aeda659805a82bcb12",
+    "vendored": "provenance/MANIFEST.vendored.tsv",
+    "vendored_sha256": "47c81eac1143c32e677999c39f7f5aed5f04998146f4d1aeda659805a82bcb12"
+  },
+  "excludes_sha256": "c73e60656d3e19f3c515d28ffde2e8fede9d83fb538b69e806efab7dad3df796",
+  "renames_sha256": "e45b907561ae371376a852e373d690d3d0420676ce199437e2cf2f935581a2a2",
+  "notes": {
+    "package-manager": "bazel + bun + cargo + nix",
+    "package_manager": "bun@>=1.4",
+    "lockfile": "Cargo.lock, MODULE.bazel.lock, bun.lock, flake.lock",
+    "workspace-root": "none",
+    "workspace_roots": "package.json#workspaces (object form: packages/*, python/robomp/web), Cargo.toml#[workspace] (members: crates/pi-ast, crates/pi-builtins, crates/pi-diff, crates/pi-edit, crates/pi-iso, crates/pi-natives, crates/pi-predict, crates/pi-shell, crates/pi-vcs, crates/pi-vfs, crates/pi-voice, crates/pi-walker, crates/vendor/brush-core, crates/vendor/brush-parser, crates/vendor/cfg_aliases, crates/vendor/napi, crates/vendor/tree-sitter-go), MODULE.bazel"
+  }
+}

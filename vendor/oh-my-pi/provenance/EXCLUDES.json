@@ -1,0 +1,5 @@
+{
+  "schema": "halo/excludes/v1",
+  "subtree": "oh-my-pi",
+  "rules": []
+}
