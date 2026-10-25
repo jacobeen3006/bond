@@ -2,9 +2,12 @@
 /**
  * The single entry point the `justfile`, the pre-commit hook, and CI call.
  *
- * Later plans add `ledger`, `verify`, `where`, `license`, `denylist-check`,
- * and `lfs` to this dispatcher; their module `main` guards must delegate to the
- * same exported function so the two invocation paths cannot diverge.
+ * Eleven commands are reachable here: `fetch`, `import`, `manifest` (plan
+ * 01-01), `replay`, `verify`, `where`, `license`, `denylist-check`, `lfs`,
+ * `ledger` (plan 01-03), and `check-attributes` (plan 01-02). `verify`, `where`
+ * and `lfs` own a module-level argument grammar (`--check`, a positional query),
+ * so they are delegated whole rather than re-parsed: the dispatcher never
+ * restates a flag rule, and the module entry point and this one cannot diverge.
  */
 
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
@@ -36,29 +39,66 @@ import {
   loadDenylist,
   treeReader,
 } from './license';
+import { main as lfsMain } from './lfs';
 import { hashFile, readManifestFile } from './manifest';
 import { ProvenanceError } from './paths';
 import { replayTree } from './replay';
 import { checkAttributes, importFromCache, importTree, restage, SERIES_HEADER } from './stage';
+import { main as verifyMain } from './verify';
+import { mainWhere } from './where';
 
 const COMMAND_ALIASES: Record<string, string> = {
   restage: 'manifest',
 };
 
-const USAGE = `usage: cli.ts <command> [--tree <name> | --all] [--sha <sha>] [--force]
+/**
+ * The one usage line. It lists every supported command, so an unknown command
+ * can point at the whole surface instead of guessing. Written to stdout for
+ * `--help` and to stderr for an error: stdout is reserved for the result lines
+ * the gates parse.
+ */
+const USAGE = `usage: cli.ts <command> [options]
 
 commands:
   fetch            --tree <name> [--sha <sha>] [--resolve]   resolve/pin one upstream tree
                    --all | --from-ledger                     rehydrate every ledger commit
   import           --tree <name> [--sha <sha>]               archive, stage, write the ledger
                    --fixture happy|hostile --tree <name>     hermetic offline import
-  ledger           --tree <name> [--force]                   re-derive PATHS/RENAMES/EXCLUDES, failing on drift
   manifest         --tree <name> | --all                     restage and refresh the vendored manifest
   replay           --tree <name> | --all                     reconstruct and compare byte-for-byte
-  check-attributes --tree <name> | --all                     fail when a filter rewrote a blob
+  verify           --tree <name> | --all                     check the ledger, index and worktree
+  where            <query> [--tree <name>] [--renames <path>] upstream path/symbol -> local path
   license          --tree <name> | --all                     re-pin every licence-ish path by raw bytes
-  denylist-check                                            prove the rebrand deny-list covers the import
+  denylist-check                                             prove the rebrand deny-list covers the import
+  lfs              --tree <name> [--check | --write] | --all Git LFS inventory and pointer check
+  ledger           --tree <name> [--force]                   re-derive PATHS/RENAMES/EXCLUDES, failing on drift
+  check-attributes --tree <name> | --all                     fail when a filter rewrote a blob
 `;
+
+/**
+ * Commands with their own argument grammar. They are handed the remaining argv
+ * verbatim so the module's parser — not a copy of it — decides what is valid.
+ */
+const DELEGATED: Record<string, (argv: readonly string[], baseDir: string) => number> = {
+  verify: verifyMain,
+  where: mainWhere,
+  lfs: lfsMain,
+};
+
+/**
+ * Commands that share the one option grammar below. `verify`, `where` and
+ * `lfs` are dispatched before this parser runs, because their grammars differ.
+ */
+const GENERIC_COMMANDS: Record<string, true> = {
+  fetch: true,
+  import: true,
+  ledger: true,
+  manifest: true,
+  replay: true,
+  'check-attributes': true,
+  license: true,
+  'denylist-check': true,
+};
 
 export type CliOptions = {
   command: string;
@@ -73,17 +113,7 @@ export function parseArgs(argv: readonly string[]): CliOptions | null {
   if (argv.length === 0 || argv.includes('--help') || argv.includes('-h')) return null;
   const rawCommand = argv[0];
   const command = COMMAND_ALIASES[rawCommand] ?? rawCommand;
-  const allowed = new Set([
-    'fetch',
-    'import',
-    'ledger',
-    'manifest',
-    'replay',
-    'check-attributes',
-    'license',
-    'denylist-check',
-  ]);
-  if (!allowed.has(command)) {
+  if (GENERIC_COMMANDS[command] !== true) {
     throw new ProvenanceError(`unknown command: ${rawCommand}`, 2);
   }
 
@@ -403,8 +433,25 @@ export function runTree(command: string, options: CliOptions, tree: string, base
 }
 
 export async function main(argv: readonly string[], baseDir?: string): Promise<number> {
-  const options = parseArgs(argv);
   const root = baseDir ?? resolve(import.meta.dir, '..', '..');
+
+  const rawCommand = argv[0];
+  const named = rawCommand === undefined ? undefined : (COMMAND_ALIASES[rawCommand] ?? rawCommand);
+  const delegated = named === undefined ? undefined : DELEGATED[named];
+  if (delegated !== undefined) return delegated(argv.slice(1), root);
+
+  let options: CliOptions | null;
+  try {
+    options = parseArgs(argv);
+  } catch (error) {
+    if (error instanceof ProvenanceError) {
+      // An unusable invocation is a usage error, and the usage line belongs on
+      // stderr with it so stdout stays parseable by the gates.
+      process.stderr.write(`${error.message}\n${USAGE}`);
+      return error.code;
+    }
+    throw error;
+  }
   if (options === null) {
     process.stdout.write(USAGE);
     return 0;
