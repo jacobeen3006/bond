@@ -1,4 +1,6 @@
 upstream-cache/
+tests/provenance/fixtures/tiny-upstream/
+vendor/tiny-upstream/
 node_modules/
 target/
 .venv/
