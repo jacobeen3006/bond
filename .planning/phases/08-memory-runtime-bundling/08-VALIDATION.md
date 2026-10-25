@@ -41,6 +41,7 @@ created: "2026-10-25"
 | Task ID | Plan | Wave | Requirement | Threat Ref | Secure Behavior | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
 | 08-01 T1 | 08-01 | 1 | MEM-01 | T-08-01 | PG binds 127.0.0.1 only; scram-sha-256; password in secret store | integration | `bun test packages/sidecars/tests/pg-boot.test.ts` | ❌ W0 | ⬜ pending |
+| 08-01 T2 | 08-01 | 1 | MEM-06 | T-08-05 | `operation_id` idempotency; `FOR UPDATE SKIP LOCKED` claim; one retain lands a vector row | integration | `bun test packages/sidecars/tests/memory-boot.test.ts` | ❌ W0 | ⬜ pending |
 | 08-02 T2 | 08-02 | 2 | MEM-02 | T-08-02 | SHA-256-verified pgvector artifact; version mismatch fails startup | integration + CI gate | `bun test packages/sidecars/tests/pgvector-version.test.ts` + `nmake installcheck` | ❌ W0 | ⬜ pending |
 | 08-03 T2 | 08-03 | 2 | MEM-03 | T-08-03 | Sidecars keyed (`--api-key`), loopback-only, restart backoff | integration | `bun test packages/sidecars/tests/llama-sidecar.test.ts` | ❌ W0 | ⬜ pending |
 | 08-04 T1 | 08-04 | 2 | MEM-04 | T-08-04 | Per-op LLM env config; degraded-mode fallback recorded | integration | `bun test packages/sidecars/tests/hindsight-embed.test.ts` | ❌ W0 | ⬜ pending |
@@ -54,6 +55,7 @@ created: "2026-10-25"
 ## Wave 0 Requirements
 
 - [ ] `packages/sidecars/tests/pg-boot.test.ts` — covers MEM-01 (initdb + client-conn health + vector query)
+- [ ] `packages/sidecars/tests/memory-boot.test.ts` — covers the end-to-end path (one retain lands a vector row via the `operation_id`-keyed `async_operations` queue)
 - [ ] `packages/sidecars/tests/pgvector-version.test.ts` — covers MEM-02 (version check + actionable failure)
 - [ ] `packages/sidecars/tests/llama-sidecar.test.ts` — covers MEM-03 (start/health/restart/profile flags)
 - [ ] `packages/sidecars/tests/hindsight-embed.test.ts` — covers MEM-04 (in-process worker + per-op env + degraded)
