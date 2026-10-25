@@ -245,8 +245,13 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
+**Wave 1**
 - [ ] 07-01-PLAN.md — Seam re-validation + end-to-end subagent tracer (task spawns a governed child, runs one turn, returns a typed result)
+
+**Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 07-02-PLAN.md — Control: steer, kill, restore a child session; a killed child leaves no orphaned process or bound port
+
+**Wave 3** *(blocked on Wave 2 completion)*
 - [ ] 07-03-PLAN.md — Concurrency cap (3 concurrent, depth 2) + per-child cost rollup over session_model_usage
 
 ### Phase 8: Memory Runtime & Bundling
