@@ -332,22 +332,25 @@ def invoke(proc, tool, args, cwd, call_id, pending):
 | A4 | The Phase 4 `BatchDispatcher` + `tools/backends/` package + `tests/conftest.py` scaffolding will be in place when Phase 5 executes (Phase 4 is a prerequisite). | Summary, Architecture Patterns | If Phase 4 is not complete, there is no `register_backend("omp", ...)` seam. Mitigation: Phase 5's plan gates on the Phase 4 `omp`-backend slot. |
 | A5 | The `halo.tool.invoke` command name and the `contractHash`/`contractVersion` ready-frame fields are the exact wire names the Phase 2 contract assigns. | Code Examples | If the Phase 2 contract uses different names, the patch must match them. Mitigation: the patch is generated against `contracts/rpc-wire.json`, not hand-named. |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Exact `halo.tool.invoke` frame schema.**
    - What we know: the command must carry `id`, `tool`, `args`, `cwd`, and an abort handle; the response must echo `id` and carry `ok`/`text`/`isError`.
    - What's unclear: whether `args` is the raw tool-parameter object or a serialized string; whether the abort is a separate `abort` command keyed by `id` or an inline signal.
    - Recommendation: define the frame in `contracts/rpc-wire.json` (Phase 2 contract) so the TS and Python sides share one source of truth; default to `args` = raw object and abort = a separate `abort` command keyed by `id` (matching the existing `abort_bash` pattern [VERIFIED: vendor/oh-my-pi/packages/coding-agent/src/modes/rpc/rpc-types.ts]).
+   - RESOLVED: defined in `contracts/rpc-wire.json` with a separate `abort` command keyed by `id` (05-01 adds the `halo.tool.invoke` entry; 05-04 adds `abort` handling to `HaloRpcClient`).
 
 2. **Which optional handlers (find / ast_grep / ast_edit / security_scan) are in scope for CORE-02.**
    - What we know: the CORE-02 minimum set is `read`/`write`/`edit`/`grep`/`glob`/`bash`/`lsp`.
    - What's unclear: whether the manifest grants the four optional file/AST handlers.
    - Recommendation: default to the seven-handler minimum set; add the optional handlers only if the `tool-ownership.json` manifest names them.
+   - RESOLVED: seven-tool minimum allowlist (`read`/`write`/`edit`/`grep`/`glob`/`bash`/`lsp` diagnostics); the four optional handlers (`find`/`ast_grep`/`ast_edit`/`security_scan`) are out of scope.
 
 3. **Deterministic-replay normalization rules.**
    - What we know: replay must reproduce a recorded session deterministically (CORE-06).
    - What's unclear: which fields are normalized (timing, `id`, absolute paths) vs. compared byte-for-byte.
    - Recommendation: normalize `id`, timestamps, and absolute-path prefixes; compare the rest byte-for-byte. Record the normalization rules in the replay suite so they are auditable.
+   - RESOLVED: normalize `id`/timestamps/absolute-path prefixes, byte-compare the rest (05-06).
 
 ## Environment Availability
 
