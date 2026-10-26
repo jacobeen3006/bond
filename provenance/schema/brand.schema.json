@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "halo/brand/v1 — the single brand source",
+  "description": "Validated by tools/brand/gen.ts with a node:fs-only walker (required / type / pattern / minItems / minLength / enum / const) — no ajv (01-01-PLAN.md:214). A violation is a pre-codegen refusal: exit 2, the offending field named, no generated file written (T-02-01).",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "product",
+    "npm",
+    "python",
+    "rust",
+    "home",
+    "env",
+    "db",
+    "wire",
+    "tokens"
+  ],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "halo/brand/v1"
+    },
+    "version": {
+      "type": "integer",
+      "const": 1
+    },
+    "product": {
+      "type": "object",
+      "required": ["name", "cli", "display"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "cli": { "type": "string", "minLength": 1 },
+        "display": { "type": "string", "minLength": 1 }
+      }
+    },
+    "npm": {
+      "type": "object",
+      "required": ["scope", "packages"],
+      "properties": {
+        "scope": { "type": "string", "pattern": "^@[^/]+$" },
+        "packages": {
+          "type": "object",
+          "required": ["core"],
+          "properties": {
+            "core": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    },
+    "python": {
+      "type": "object",
+      "required": ["dist_prefix", "module", "entry_group"],
+      "properties": {
+        "dist_prefix": { "type": "string", "pattern": "^[a-z0-9]+_$" },
+        "module": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+        "entry_group": { "type": "string", "pattern": "^[a-z0-9_.]+$" }
+      }
+    },
+    "rust": {
+      "type": "object",
+      "required": ["crate_prefix"],
+      "properties": {
+        "crate_prefix": { "type": "string", "pattern": "^[a-z0-9]+_$" }
+      }
+    },
+    "home": {
+      "type": "object",
+      "required": ["env", "windows", "posix", "legacy"],
+      "properties": {
+        "env": { "type": "string", "minLength": 1 },
+        "windows": { "type": "string", "minLength": 1 },
+        "posix": { "type": "string", "minLength": 1 },
+        "legacy": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["value", "reason"],
+            "properties": {
+              "value": { "type": "string", "minLength": 1 },
+              "reason": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "deviation_note": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Optional rationale for home.windows deviating from the AGENTS.md Migration-shims 'Config dir' row (%APPDATA%\\HALO); emitted as the doc-comment on the generated home constants."
+        }
+      }
+    },
+    "env": {
+      "type": "object",
+      "required": ["prefix", "legacy_prefixes"],
+      "properties": {
+        "prefix": { "type": "string", "minLength": 1, "pattern": "^[A-Z][A-Z0-9_]*_$" },
+        "legacy_prefixes": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*_$" }
+        },
+        "exceptions": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" },
+          "description": "Legacy env names that will not transform cleanly under the prefix swap; the runtime table (plan 02-06) applies the generated transform plus this list. Absent before plan 02-01 Task 2; an empty list is valid."
+        }
+      }
+    },
+    "db": {
+      "type": "object",
+      "required": ["schema", "legacy_schema"],
+      "properties": {
+        "schema": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+        "legacy_schema": { "type": "string", "pattern": "^[a-z0-9_]+$" }
+      }
+    },
+    "wire": {
+      "type": "object",
+      "required": ["prefix", "contract"],
+      "properties": {
+        "prefix": { "type": "string", "pattern": "^[a-z0-9]+$" },
+        "contract": { "type": "string", "minLength": 1 }
+      }
+    },
+    "tokens": {
+      "type": "object",
+      "required": ["deny"],
+      "properties": {
+        "deny": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["value", "reason"],
+            "properties": {
+              "value": { "type": "string", "minLength": 1 },
+              "reason": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    }
+  }
+}

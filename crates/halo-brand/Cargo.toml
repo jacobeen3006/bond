@@ -1,0 +1,21 @@
+# crates/halo-brand — HALO brand constants crate.
+#
+# Hand-authored manifest; the one produced artifact is src/brand_gen.rs
+# (emitted by tools/brand/gen.ts, drift-gated by `just brand-gen`).
+#
+# The crate lives OUTSIDE vendor/ and is never a workspace member of a
+# vendored workspace (DEC-04): no root Cargo workspace exists in this repo.
+#
+# Edition pin (plan 02-01 Task 1): pinned to the vendored
+# vendor/oh-my-pi/rust-toolchain.toml value when present at run time, else
+# 2021. That file (channel nightly-2026-10-06) carries no edition value, so
+# the pin resolves to 2021.
+[package]
+name = "halo-brand"
+version = "0.0.0"
+edition = "2021"
+license = "MIT"
+
+[lib]
+name = "halo_brand"
+path = "src/brand_gen.rs"

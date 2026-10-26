@@ -60,7 +60,14 @@ provenance-license tree="":
 provenance-lfs tree="":
     bun.exe run tools/provenance/cli.ts lfs {{ if replace(tree, "tree=", "") == "" { "--all" } else { "--tree " + replace(tree, "tree=", "") } }}
 
-# The two provenance suites, split so a failure names the layer it came from.
+
+# Regenerates the brand vocabulary from brand.json; the unfiltered drift gate
+# (git diff --exit-code) fails on any hand edit of a generated file, including
+# tools/rebrand/ (plan 02-01 Task 3 needs no recipe change: no path filter).
+brand-gen:
+    bun.exe run tools/brand/gen.ts
+    git diff --exit-code
+
 provenance-tests:
     bun.exe test tools/provenance
     bun.exe test tests/provenance

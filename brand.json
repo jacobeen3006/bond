@@ -1,0 +1,95 @@
+{
+  "schema": "halo/brand/v1",
+  "version": 1,
+  "product": {
+    "name": "HALO",
+    "cli": "halo",
+    "display": "Halo"
+  },
+  "npm": {
+    "scope": "@halo",
+    "packages": {
+      "core": "halo-core"
+    }
+  },
+  "python": {
+    "dist_prefix": "halo_",
+    "module": "halo_agent",
+    "entry_group": "halo_agent.plugins"
+  },
+  "rust": {
+    "crate_prefix": "halo_"
+  },
+  "home": {
+    "env": "HALO_HOME",
+    "windows": "%LOCALAPPDATA%\\HALO",
+    "posix": "~/.halo",
+    "legacy": [
+      {
+        "value": "HERMES_HOME",
+        "reason": "Hermes home override env var (P-03); read-old via the generated legacy-env transform"
+      },
+      {
+        "value": "%LOCALAPPDATA%\\hermes",
+        "reason": "Hermes Windows home default (hermes-agent env reference); migrates to the generated home.windows"
+      },
+      {
+        "value": "~/.hermes",
+        "reason": "Hermes POSIX home default; migrates to the generated home.posix"
+      },
+      {
+        "value": "~/.omp",
+        "reason": "OMP home incl. .omp project dirs and ~/.omp/agent gsd projections (P-03); migrates to the generated home.posix"
+      }
+    ],
+    "deviation_note": "home.windows ships %LOCALAPPDATA%\\HALO, a deliberate override of the AGENTS.md Migration-shims table 'Config dir' row (%APPDATA%\\HALO): the STACK rule is data in %LOCALAPPDATA%, never roaming %APPDATA% (RESEARCH Pattern 4 item 3; roaming-profile sync is the data-loss risk)."
+  },
+  "env": {
+    "prefix": "HALO_",
+    "legacy_prefixes": ["HERMES_", "HINDSIGHT_API_", "PI_", "OMP_"]
+  },
+  "db": {
+    "schema": "halo",
+    "legacy_schema": "public"
+  },
+  "wire": {
+    "prefix": "halo",
+    "contract": "contracts/rpc-wire.json"
+  },
+  "tokens": {
+    "deny": [
+      {
+        "value": "oh-my-pi",
+        "reason": "upstream coding-harness product name; must not appear in HALO user-visible strings"
+      },
+      {
+        "value": "pi-natives",
+        "reason": "upstream Rust crate name (case-sensitive rename target); short-token family, identifier/string positions only"
+      },
+      {
+        "value": "pi_",
+        "reason": "upstream env prefix inherited from OMP's upstream pi (P-03); short-token family, identifier/string positions only"
+      },
+      {
+        "value": "omp",
+        "reason": "upstream agent product name; short-token family, identifier/string positions only"
+      },
+      {
+        "value": "hermes",
+        "reason": "upstream agent-runtime product name; must not appear in HALO user-visible strings"
+      },
+      {
+        "value": "hindsight",
+        "reason": "upstream memory product name; must not appear in HALO user-visible strings"
+      },
+      {
+        "value": "vectorize",
+        "reason": "upstream vendor name (hindsight); must not appear in HALO user-visible strings"
+      },
+      {
+        "value": "gsd-omp",
+        "reason": "upstream workflow-policy product name; must not appear in HALO user-visible strings"
+      }
+    ]
+  }
+}
