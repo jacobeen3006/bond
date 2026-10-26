@@ -11,7 +11,7 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { buildOutputs, loadBrand, validateBrand } from "../gen";
+import { buildOutputs, loadBrand, transformName, validateBrand } from "../gen";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const REPO = path.resolve(HERE, "..", "..", "..");
@@ -218,5 +218,93 @@ describe("plan 02-01 Task 1 — brand vocabulary end to end", () => {
     const r = runCli(root, ["--check"]);
     expect(r.status).toBe(1);
     expect(r.stdout).toContain("BRAND DRIFT runtime/shared_contracts/brand.gen.ts");
+  });
+
+  test("Task 2: transform rows with exact expected values (rules, not a 200-name enumeration)", () => {
+    const { brand } = loadBrand(REPO);
+    const b = brand as never as { env: { prefix: string; legacy_prefixes: string[] } };
+    const t = (name: string): string | null => transformName(name, b.env.legacy_prefixes, b.env.prefix);
+    expect(t("HERMES_KANBAN_DB")).toBe("HALO_KANBAN_DB");
+    expect(t("HINDSIGHT_API_DATABASE_SCHEMA")).toBe("HALO_DATABASE_SCHEMA");
+    expect(t("PI_NO_PTY")).toBe("HALO_NO_PTY");
+    expect(t("OMP_HOME")).toBe("HALO_HOME");
+    expect(t("NOT_A_BRAND_VAR")).toBeNull();
+    // never a double swap: the result of one swap is not re-swapped
+    expect(t("HALO_KANBAN_DB")).toBeNull();
+  });
+
+  test("Task 2: generated legacy tables carry identical transform values and the byte-sorted prefix order (TS + Python)", () => {
+    const { brand } = loadBrand(REPO);
+    const root = makeRoot(brand, true);
+    const ts = readFileSync(path.join(root, "runtime", "shared_contracts", "legacyEnv.gen.ts"), "utf8");
+    const py = readFileSync(path.join(root, "runtime", "shared_contracts", "halo_agent", "legacy_env_gen.py"), "utf8");
+    for (const text of [ts, py]) {
+      expect(text).toContain('"HERMES_KANBAN_DB": "HALO_KANBAN_DB"');
+      expect(text).toContain('"HINDSIGHT_API_DATABASE_SCHEMA": "HALO_DATABASE_SCHEMA"');
+      expect(text).toContain('"PI_NO_PTY": "HALO_NO_PTY"');
+      expect(text).toContain('"OMP_HOME": "HALO_HOME"');
+    }
+    // prefix order ["HERMES_", "HINDSIGHT_API_", "OMP_", "PI_"] in both files
+    for (const text of [ts, py]) {
+      const iHermes = text.indexOf("HERMES_,\n  \"HINDSIGHT_API_\"");
+      expect(iHermes, "prefix list must be byte-sorted").toBeGreaterThan(-1);
+    }
+    expect(ts).toContain('LEGACY_ENV_PREFIXES = [');
+    expect(py).toContain("LEGACY_ENV_PREFIXES = (");
+  });
+
+  test("Task 2: collision refusals — two legacy names to one new name, HALO_ inside legacy_prefixes, identity name (all exit 2, output untouched)", () => {
+    const cases: [string, (b: Record<string, unknown>) => void][] = [
+      ["two legacy names -> one new name", (b) => {
+        const env = b.env;
+        if (typeof env !== "object" || env === null) throw new Error("env missing");
+        (env as Record<string, unknown>).exceptions = ["HERMES_X", "PI_X"];
+      }],
+      ["HALO_ inside legacy_prefixes (identity at prefix level)", (b) => {
+        const env = b.env;
+        if (typeof env !== "object" || env === null) throw new Error("env missing");
+        (env as Record<string, unknown>).legacy_prefixes = ["HERMES_", "HINDSIGHT_API_", "PI_", "OMP_", "HALO_"];
+      }],
+      ["a legacy name that is already a new name (identity)", (b) => {
+        const env = b.env;
+        if (typeof env !== "object" || env === null) throw new Error("env missing");
+        (env as Record<string, unknown>).exceptions = ["HALO_FOO"];
+      }],
+    ];
+    for (const [label, mutate] of cases) {
+      const brand = readBrandJson();
+      mutate(brand);
+      const root = makeRoot(brand, true); // seed: valid outputs on disk
+      const { brand: validBrand } = loadBrand(REPO);
+      const seeded = buildOutputs(validBrand as never);
+      const r = runCli(root, []);
+      expect(r.status, `exit for ${label}`).toBe(2);
+      expect(r.stdout, `stdout for ${label}`).toContain("COLLISION");
+      for (const [rel, bytes] of seeded) {
+        expect(readFileSync(path.join(root, ...rel.split("/"))).equals(bytes), `${label}: ${rel} untouched`).toBe(true);
+      }
+    }
+  });
+
+  test("Task 2: deny-token config — one entry per token with exact/title/upper variants, context per family", () => {
+    const { brand } = loadBrand(REPO);
+    const root = makeRoot(brand, true);
+    const doc = JSON.parse(readFileSync(path.join(root, "tools", "rebrand", "deny-tokens.gen.json"), "utf8"));
+    expect(doc.schema).toBe("halo/deny-tokens/v1");
+    expect(doc.version).toBe(1);
+    const tokens = (brand as never as { tokens: { deny: { value: string }[] } }).tokens.deny.map((e) => e.value).sort();
+    expect(doc.entries.length).toBe(tokens.length);
+    for (const entry of doc.entries) {
+      const title = entry.token.charAt(0).toUpperCase() + entry.token.slice(1);
+      expect(entry.case_variants).toEqual([entry.token, title, entry.token.toUpperCase()]);
+      const shortFamily = ["pi_", "omp", "pi-natives"];
+      const want = shortFamily.includes(entry.token) ? "identifier_string" : "all";
+      expect(entry.context, `context for ${entry.token}`).toBe(want);
+    }
+    const byToken = new Map(doc.entries.map((e: { token: string }) => [e.token, e]));
+    expect(byToken.get("oh-my-pi")?.context).toBe("all");
+    expect(byToken.get("pi-natives")?.context).toBe("identifier_string");
+    expect(byToken.get("pi_")?.context).toBe("identifier_string");
+    expect(byToken.get("omp")?.context).toBe("identifier_string");
   });
 });

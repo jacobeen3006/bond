@@ -1,0 +1,86 @@
+{
+  "entries": [
+    {
+      "case_variants": [
+        "gsd-omp",
+        "Gsd-omp",
+        "GSD-OMP"
+      ],
+      "context": "all",
+      "reason": "upstream workflow-policy product name; must not appear in HALO user-visible strings",
+      "token": "gsd-omp"
+    },
+    {
+      "case_variants": [
+        "hermes",
+        "Hermes",
+        "HERMES"
+      ],
+      "context": "all",
+      "reason": "upstream agent-runtime product name; must not appear in HALO user-visible strings",
+      "token": "hermes"
+    },
+    {
+      "case_variants": [
+        "hindsight",
+        "Hindsight",
+        "HINDSIGHT"
+      ],
+      "context": "all",
+      "reason": "upstream memory product name; must not appear in HALO user-visible strings",
+      "token": "hindsight"
+    },
+    {
+      "case_variants": [
+        "oh-my-pi",
+        "Oh-my-pi",
+        "OH-MY-PI"
+      ],
+      "context": "all",
+      "reason": "upstream coding-harness product name; must not appear in HALO user-visible strings",
+      "token": "oh-my-pi"
+    },
+    {
+      "case_variants": [
+        "omp",
+        "Omp",
+        "OMP"
+      ],
+      "context": "identifier_string",
+      "reason": "upstream agent product name; short-token family, identifier/string positions only",
+      "token": "omp"
+    },
+    {
+      "case_variants": [
+        "pi-natives",
+        "Pi-natives",
+        "PI-NATIVES"
+      ],
+      "context": "identifier_string",
+      "reason": "upstream Rust crate name (case-sensitive rename target); short-token family, identifier/string positions only",
+      "token": "pi-natives"
+    },
+    {
+      "case_variants": [
+        "pi_",
+        "Pi_",
+        "PI_"
+      ],
+      "context": "identifier_string",
+      "reason": "upstream env prefix inherited from OMP's upstream pi (P-03); short-token family, identifier/string positions only",
+      "token": "pi_"
+    },
+    {
+      "case_variants": [
+        "vectorize",
+        "Vectorize",
+        "VECTORIZE"
+      ],
+      "context": "all",
+      "reason": "upstream vendor name (hindsight); must not appear in HALO user-visible strings",
+      "token": "vectorize"
+    }
+  ],
+  "schema": "halo/deny-tokens/v1",
+  "version": 1
+}

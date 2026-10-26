@@ -1,0 +1,1 @@
+{"content":"ast-grep 0.51.0 run: -p pattern, -r rewrite, -l lang, -U update-all, --json=stream machine output, --globs include/exclude; exits 0 on match, 1 on no match (use for deny-gate absence checks). Verified from official cli/run reference.","source":"web","provider":"websearch","confidence":"MEDIUM","fetched_at":"2026-10-23T04:32:30.462Z","ttl":86400000,"kind":"docs"}

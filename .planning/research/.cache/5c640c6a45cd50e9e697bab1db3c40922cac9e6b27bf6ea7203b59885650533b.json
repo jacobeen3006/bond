@@ -1,0 +1,1 @@
+{"content":"bun build --compile supports Windows-specific flags that customize .exe metadata (icon, version/product info) per the official single-file-executable docs; exact flag names to be pinned against Bun 1.4.4 docs at plan time.","source":"web","provider":"websearch","confidence":"MEDIUM","fetched_at":"2026-10-23T04:32:30.854Z","ttl":86400000,"kind":"docs"}

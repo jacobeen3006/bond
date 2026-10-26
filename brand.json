@@ -46,7 +46,8 @@
   },
   "env": {
     "prefix": "HALO_",
-    "legacy_prefixes": ["HERMES_", "HINDSIGHT_API_", "PI_", "OMP_"]
+    "legacy_prefixes": ["HERMES_", "HINDSIGHT_API_", "PI_", "OMP_"],
+    "exceptions": []
   },
   "db": {
     "schema": "halo",

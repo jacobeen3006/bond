@@ -1,0 +1,73 @@
+{
+  "contract": "1.0.0",
+  "flavor": "core",
+  "milestone": null,
+  "phases": [
+    {
+      "number": "1",
+      "name": "Import & Provenance Ledger",
+      "status": "complete"
+    },
+    {
+      "number": "2",
+      "name": "Rebrand, Wire Contract & Migration",
+      "status": "pending"
+    },
+    {
+      "number": "3",
+      "name": "Unified Loop & Session Authority",
+      "status": "pending"
+    },
+    {
+      "number": "4",
+      "name": "Tool Registry & Policy Gate",
+      "status": "pending"
+    },
+    {
+      "number": "5",
+      "name": "Coding Core over RPC",
+      "status": "pending"
+    },
+    {
+      "number": "6",
+      "name": "Code Intelligence, Execution & Rollback",
+      "status": "pending"
+    },
+    {
+      "number": "7",
+      "name": "Subagent Orchestration",
+      "status": "pending"
+    },
+    {
+      "number": "8",
+      "name": "Memory Runtime & Bundling",
+      "status": "pending"
+    },
+    {
+      "number": "9",
+      "name": "Four-Lane Scheduling & Lane SLOs",
+      "status": "pending"
+    },
+    {
+      "number": "10",
+      "name": "Desktop & CLI Product Surface",
+      "status": "pending"
+    },
+    {
+      "number": "11",
+      "name": "Skills, Plugins, GSD & Kanban",
+      "status": "pending"
+    },
+    {
+      "number": "12",
+      "name": "Hardening, Packaging & Release",
+      "status": "pending"
+    }
+  ],
+  "next": {
+    "command": "/gsd-progress --next",
+    "label": "Advance to the next step",
+    "reason": "Phase 2 of 12 · 8% · executing"
+  },
+  "updated_at": "2026-10-26T00:18:11.474Z"
+}
