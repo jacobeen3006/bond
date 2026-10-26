@@ -132,6 +132,22 @@ describe("plan 02-01 Task 1 — brand vocabulary end to end", () => {
     }
   });
 
+  test("a hand edit of a generated file is refused in generate mode (exit 1, BRAND DRIFT, edit preserved, no partial writes)", () => {
+    const { brand } = loadBrand(REPO);
+    const root = makeRoot(brand, true);
+    const p = path.join(root, "runtime", "shared_contracts", "brand.gen.ts");
+    const seeded = readFileSync(p);
+    const bytes = readFileSync(p);
+    writeFileSync(p, Buffer.concat([bytes, Buffer.from("edit\n")]));
+    const other = path.join(root, "runtime", "shared_contracts", "halo_agent", "brand_gen.py");
+    const otherBefore = readFileSync(other);
+    const r = runCli(root, []);
+    expect(r.status).toBe(1);
+    expect(r.stdout).toContain("BRAND DRIFT runtime/shared_contracts/brand.gen.ts");
+    expect(readFileSync(p)).toEqual(Buffer.concat([seeded, Buffer.from("edit\n")]));
+    expect(readFileSync(other).equals(otherBefore)).toBe(true);
+  });
+
   test("byte stability: shuffled input arrays regenerate byte-identically; locale-vs-byte pair orders by bytes", () => {
     const { brand } = loadBrand(REPO);
     const baseline = buildOutputs(brand as never);

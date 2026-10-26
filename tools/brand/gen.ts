@@ -17,8 +17,10 @@
 //   bun run tools/brand/gen.ts          regenerate from ./brand.json
 //   bun run tools/brand/gen.ts --check  compare against committed files; never writes
 //
-// Exit codes: 0 clean; 1 drift (check mode only); 2 invalid brand (pre-write refusal).
+// Exit codes: 0 clean; 1 drift (`--check`, or a hand-edit refusal in generate
+// mode); 2 invalid brand (pre-write refusal, offending field named).
 
+import { spawnSync } from "node:child_process";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
@@ -315,7 +317,15 @@ export interface CliResult {
   lines: string[];
 }
 
-/** The single main() body; tests call this with a scratch root. */
+// The committed (index) copy of a generated file: null when the path is not
+// staged (a first write) or the root is not a git repo (scratch dirs).
+// argv-array spawn, no shell (01-01-PLAN.md:121 discipline).
+function indexBytes(root: string, rel: string): Buffer | null {
+  const r = spawnSync("git", ["show", `:0:${rel}`], { cwd: root });
+  if (r.status !== 0) return null;
+  return r.stdout;
+}
+
 export function run(root: string, check: boolean): CliResult {
   let brand: Brand;
   let schema: unknown;
@@ -344,21 +354,38 @@ export function run(root: string, check: boolean): CliResult {
     if (drift.length > 0) return { exit: 1, lines: drift };
     return { exit: 0, lines: ["BRAND OK unchanged"] };
   }
-  let changed = 0;
+  // All-or-nothing write: classify every output first. A working-tree file whose
+  // bytes differ from both the derivation and the committed (index) copy is a
+  // hand edit — the generator refuses (BRAND DRIFT, exit 1, nothing written)
+  // instead of silently rewriting past a reviewed diff (threat model: the
+  // drift gate is the review mechanism). A file that matches the index but not
+  // the derivation is a legitimate regeneration (brand.json changed) and is
+  // written; a missing file is a first write.
+  const toWrite: [string, Buffer][] = [];
+  const drift: string[] = [];
   for (const [rel, bytes] of outputs) {
     const abs = path.join(root, rel);
-    mkdirSync(path.dirname(abs), { recursive: true });
-    let prev: Buffer | null = null;
+    let onDisk: Buffer | null = null;
     try {
-      prev = readFileSync(abs);
+      onDisk = readFileSync(abs);
     } catch {
       /* absent */
     }
-    if (prev === null || !prev.equals(bytes)) {
-      writeFileSync(abs, bytes);
-      changed += 1;
+    if (onDisk === null) {
+      toWrite.push([abs, bytes]);
+      continue;
     }
+    if (onDisk.equals(bytes)) continue;
+    const committed = indexBytes(root, rel);
+    if (committed !== null && onDisk.equals(committed)) toWrite.push([abs, bytes]);
+    else drift.push(`BRAND DRIFT ${rel}`);
   }
+  if (drift.length > 0) return { exit: 1, lines: drift };
+  for (const [abs, bytes] of toWrite) {
+    mkdirSync(path.dirname(abs), { recursive: true });
+    writeFileSync(abs, bytes);
+  }
+  const changed = toWrite.length;
   return {
     exit: 0,
     lines: changed === 0 ? ["BRAND OK unchanged"] : [`BRAND OK generated files=${changed}`],
