@@ -436,16 +436,16 @@ HALO: the state file moves to the HALO home; a second trigger (TDD cycle complet
 | 6 | The TDD phase (RED/GREEN/REFACTOR) for the per-turn gate snapshot is written into session state by Phase 11's extension (the session state layer from Phase 3 already exists; the TDD-phase writer is this phase's) | 04-RESEARCH.md:42 reserves the `phase` slot; 03-AI-SPEC.md:185-188 defines `run_turn` without a TDD phase | If Phase 3's session state already carries TDD phase, the writer is a thinner adapter |
 | 7 | The advisor's "second model" is resolved through the existing model provisioning/settings (no new sidecar) | `advisor.yaml:6-25` (a model is nominated; no runtime of its own) [VERIFIED] | A dedicated model config surface may be added in the Settings page (Phase 10) — additive, not a new runtime |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **14 vs 15 kanban tools (blocking for the test matrix).** EXT-03 says "all 14 kanban tools"; `kanban_tools.py` registers 15 [VERIFIED: `kanban_tools.py:1295-1310`]. Which is the exclusion, if any? **Decision needed at Wave 0**; default: ship 15, correct the requirement text in the phase plan.
-2. **GSD TDD skill set enumeration.** Which skills of `@opengsd/gsd-core` are the "GSD TDD skills" (names/paths)? Cannot be enumerated without running the pinned package. **Wave 0 checkpoint:human-verify** after the package-legitimacy seam + enumeration fixture.
-3. **prewalk.md full spec.** Read the body before implementing the pre-task pass (Assumption 3).
-4. **TDD phase writer (Assumption 6).** Confirm with the Phase 3 plan whether the session state already carries the TDD phase or Phase 11 adds the writer.
-5. **Evidence row write path.** Which gate-admitted tool call writes a failing-run evidence row (test id, exit status, output hash)? The test-runner tooling must be the sole writer (append-only store rows).
-6. **Hub live-fetch posture.** Bundled snapshot only (recommended, upstream-cut) vs. optional live fetch behind a network capability.
-7. **fast/good tier → subagent profile mapping (EXT-08).** Confirm Phase 7's subagent profile names map 1:1 to OMP's `sonic` (fast, mechanical) / `task` (good, judgment) semantics before the mode layer is built.
-8. **Advisor model selection surface.** Settings page (Phase 10) vs. hardcoded default — which model is the default "advisor".
+1. **14 vs 15 kanban tools.** EXT-03 says "14 tools"; `kanban_tools.py` registers 15 [VERIFIED]. **RESOLVED:** ship 15; 11-07 corrects the requirement text in its discovery_notes.
+2. **GSD TDD skill set enumeration.** Names/paths unknown without running the pinned package. **RESOLVED:** 11-01 Task 3 runs npm install, captures enumeration into `tests/fixtures/gsd_core_skillset.json`; Wave 0 checkpoint:human-verify added.
+3. **prewalk.md full spec.** Body not readable from vendored tree. **RESOLVED:** 11-01 scaffolds read the body in Wave 0 before 11-09 implements the pre-task pass.
+4. **TDD phase writer.** Whether Phase 3's session state carries TDD phase or Phase 11 adds it. **RESOLVED:** 11-04 verifies in Wave 0 against Phase 3 plan and writes the carrier if absent.
+5. **Evidence row write path.** Which tool call writes failing-run evidence. **RESOLVED:** 11-04 designates the test-runner tooling as the sole append-only writer; evidence rows indexed by session+phase+test_id.
+6. **Hub live-fetch posture.** Bundled vs. live. **RESOLVED:** bundled snapshot only (upstream-cut); live fetch behind a network capability if ever needed (11-02).
+7. **fast/good tier → subagent profile mapping.** OMP semantics vs Phase 7. **RESOLVED:** 11-09 maps fast→subagent with profile parameters; confirmed against Phase 7 plan at execution time.
+8. **Advisor model selection surface.** Settings page vs. hardcoded. **RESOLVED:** Settings page (Phase 10) controls selection, or a documented default; no new sidecar (11-08).
 
 ## Environment Availability
 
